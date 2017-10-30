@@ -21,7 +21,6 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-include(cmr_get_version_parts)
 include(cmr_print_fatal_error)
 
 function(cmr_freetype_get_download_params

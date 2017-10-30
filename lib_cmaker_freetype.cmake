@@ -48,9 +48,9 @@ function(lib_cmaker_freetype)
   
   set(oneValueArgs
     # required args
-    BUILD_DIR
+    VERSION BUILD_DIR
     # optional args
-    VERSION DOWNLOAD_DIR UNPACKED_SRC_DIR
+    DOWNLOAD_DIR UNPACKED_SRC_DIR
   )
 
   set(multiValueArgs
@@ -65,9 +65,9 @@ function(lib_cmaker_freetype)
 
   cmr_print_var_value(LIBCMAKER_SRC_DIR)
 
+  cmr_print_var_value(arg_VERSION)
   cmr_print_var_value(arg_BUILD_DIR)
 
-  cmr_print_var_value(arg_VERSION)
   cmr_print_var_value(arg_DOWNLOAD_DIR)
   cmr_print_var_value(arg_UNPACKED_SRC_DIR)
 
