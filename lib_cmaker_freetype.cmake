@@ -72,6 +72,9 @@ function(lib_cmaker_freetype)
   cmr_print_var_value(arg_UNPACKED_SRC_DIR)
 
   # Required args
+  if(NOT arg_VERSION)
+    cmr_print_fatal_error("Argument VERSION is not defined.")
+  endif()
   if(NOT arg_BUILD_DIR)
     cmr_print_fatal_error("Argument BUILD_DIR is not defined.")
   endif()
@@ -87,7 +90,7 @@ function(lib_cmaker_freetype)
 
   set(lcm_CMAKE_ARGS)
 
-  if(FREETYPE_NO_DIST)
+  if(DEFINED FREETYPE_NO_DIST)
     list(APPEND lcm_CMAKE_ARGS
       -DFREETYPE_NO_DIST=${FREETYPE_NO_DIST}
     )
@@ -102,27 +105,12 @@ function(lib_cmaker_freetype)
     endif()
   endforeach()
 
-  if(SKIP_INSTALL_HEADERS)
-    list(APPEND lcm_CMAKE_ARGS
-      -DSKIP_INSTALL_HEADERS=${SKIP_INSTALL_HEADERS}
-    )
-  endif()
-  if(SKIP_INSTALL_LIBRARIES)
-    list(APPEND lcm_CMAKE_ARGS
-      -DSKIP_INSTALL_LIBRARIES=${SKIP_INSTALL_LIBRARIES}
-    )
-  endif()
-  if(SKIP_INSTALL_ALL)
-    list(APPEND lcm_CMAKE_ARGS
-      -DSKIP_INSTALL_ALL=${SKIP_INSTALL_ALL}
-    )
-  endif()
-  if(BUILD_FRAMEWORK)
+  if(DEFINED BUILD_FRAMEWORK)
     list(APPEND lcm_CMAKE_ARGS
       -DBUILD_FRAMEWORK=${BUILD_FRAMEWORK}
     )
   endif()
-  if(IOS_PLATFORM)
+  if(DEFINED IOS_PLATFORM)
     list(APPEND lcm_CMAKE_ARGS
       -DIOS_PLATFORM=${IOS_PLATFORM}
     )

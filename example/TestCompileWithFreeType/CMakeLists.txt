@@ -39,27 +39,29 @@ set(LIBCMAKER_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker")
 # Set vars for LibCMaker_FreeType.
 #-----------------------------------------------------------------------
 
-set(lib_VERSION "2.7.1")
+# Standard CMake vars.
 #set(BUILD_SHARED_LIBS ON)
+
+#set(SKIP_INSTALL_HEADERS ON)
+#set(SKIP_INSTALL_LIBRARIES ON)
+#set(SKIP_INSTALL_ALL ON)
 
 # Set useful vars for lib_cmaker_freetype().
 set(cmr_PRINT_DEBUG ON)
+
+set(lib_VERSION "2.7.1")
 
 set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
 set(BUILD_DIR "${PROJECT_BINARY_DIR}/build")
 
-# Library specific vars
+# Library specific vars.
 set(FREETYPE_NO_DIST ON)
 
 set(WITH_ZLIB OFF)
 set(WITH_BZip2 OFF)
 set(WITH_PNG OFF)
 set(WITH_HarfBuzz OFF)
-
-#set(SKIP_INSTALL_HEADERS ON)
-#set(SKIP_INSTALL_LIBRARIES ON)
-#set(SKIP_INSTALL_ALL ON)
 
 
 #-----------------------------------------------------------------------
@@ -79,13 +81,6 @@ lib_cmaker_freetype(
   UNPACKED_SRC_DIR ${UNPACKED_SRC_DIR}
   BUILD_DIR ${BUILD_DIR}
 )
-
-# Install default library version.
-#lib_cmaker_freetype(
-#  DOWNLOAD_DIR ${DOWNLOAD_DIR}
-#  UNPACKED_SRC_DIR ${UNPACKED_SRC_DIR}
-#  BUILD_DIR ${BUILD_DIR}
-#)
 
 
 #-----------------------------------------------------------------------

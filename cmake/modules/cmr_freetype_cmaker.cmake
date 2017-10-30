@@ -34,14 +34,14 @@ function(cmr_freetype_cmaker)
   cmake_minimum_required(VERSION 3.2)
 
   # Required vars
+  if(NOT lib_VERSION)
+    cmr_print_fatal_error("Variable lib_VERSION is not defined.")
+  endif()
   if(NOT lib_BUILD_DIR)
     cmr_print_fatal_error("Variable lib_BUILD_DIR is not defined.")
   endif()
 
   # Optional vars
-  if(NOT lib_VERSION)
-    set(lib_VERSION "2.7.1")
-  endif()
   if(NOT lib_DOWNLOAD_DIR)
     set(lib_DOWNLOAD_DIR ${CMAKE_CURRENT_BINARY_DIR})
   endif()
@@ -50,7 +50,7 @@ function(cmr_freetype_cmaker)
   endif()
   
   cmr_freetype_get_download_params(${lib_VERSION}
-    lib_URL lib_SHA1 lib_SRC_DIR_NAME lib_ARCH_FILE_NAME)
+    lib_URL lib_SHA lib_SRC_DIR_NAME lib_ARCH_FILE_NAME)
 
   set(lib_ARCH_FILE "${lib_DOWNLOAD_DIR}/${lib_ARCH_FILE_NAME}")
   set(lib_SRC_DIR "${lib_UNPACKED_SRC_DIR}/${lib_SRC_DIR_NAME}")
@@ -68,7 +68,7 @@ function(cmr_freetype_cmaker)
     message(STATUS "Download ${lib_URL}")
     file(
       DOWNLOAD "${lib_URL}" "${lib_ARCH_FILE}"
-      EXPECTED_HASH SHA1=${lib_SHA1}
+      EXPECTED_HASH SHA1=${lib_SHA}
       SHOW_PROGRESS
     )
   endif()
