@@ -23,8 +23,9 @@
 
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-project(LibCMaker_FreeType_Compile_Test C)
+project(LibCMaker_FreeType_Compile_Test)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 #-----------------------------------------------------------------------
 # Set path to LibCMaker root
@@ -49,7 +50,7 @@ set(LIBCMAKER_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker")
 # Set useful vars for lib_cmaker_freetype().
 set(cmr_PRINT_DEBUG ON)
 
-set(lib_VERSION "2.7.1")
+set(lib_VERSION "2.8.1")
 
 set(DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
@@ -63,6 +64,25 @@ set(WITH_BZip2 OFF)
 set(WITH_PNG OFF)
 set(WITH_HarfBuzz OFF)
 
+if(WITH_HarfBuzz)
+  # Need for lib_cmaker_freetype() to build HarfBuzz
+  set(LIBCMAKER_HARFBUZZ_SRC_DIR
+    "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_HarfBuzz")
+  # To find FindHarfBuzz.cmake
+  list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/")
+
+  set(HB_lib_VERSION "1.6.3")
+
+  set(HB_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
+  set(HB_UNPACKED_SRC_DIR "${PROJECT_BINARY_DIR}")
+  set(HB_BUILD_DIR "${PROJECT_BINARY_DIR}/build_hb")
+
+  # Need to find FreeType in lib_cmaker_harfbuzz().
+  # ENV{FREETYPE_DIR} is not need to find Freetype in CONFIG mode.
+  set(ENV{FREETYPE_DIR} "${CMAKE_INSTALL_PREFIX}")
+  # Need to find HarfBuzz in lib_cmaker_freetype() and here.
+  set(ENV{HARFBUZZ_DIR} "${CMAKE_INSTALL_PREFIX}")
+endif()
 
 #-----------------------------------------------------------------------
 # Build and install the FreeType.
@@ -88,7 +108,7 @@ lib_cmaker_freetype(
 #-----------------------------------------------------------------------
 
 if(ANDROID)
-  set(CMAKE_FIND_ROOT_PATH "${CMAKE_INSTALL_PREFIX}")
+  list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 
@@ -98,6 +118,10 @@ endif()
 
 # Use newly got library.
 find_package(Freetype REQUIRED CONFIG)
+if(WITH_HarfBuzz)
+  find_package(HarfBuzz REQUIRED)
+endif()
+
 
 # QUIET suppresses the big warning issued, and allows fallback
 #find_package(Freetype QUIET CONFIG)
@@ -116,5 +140,13 @@ find_package(Freetype REQUIRED CONFIG)
 #-----------------------------------------------------------------------
 
 # Build test executables
-add_executable (${PROJECT_NAME} test_with_freetype.c)
+add_executable(${PROJECT_NAME} test_with_freetype.c)
 target_link_libraries(${PROJECT_NAME} freetype)
+if(WITH_HarfBuzz)
+  target_include_directories(${PROJECT_NAME} PUBLIC ${HARFBUZZ_INCLUDE_DIR})
+  # From <freetype sources>/docs/CHANGES:
+  #  Note that HarfBuzz depends on FreeType.
+  target_link_libraries(${PROJECT_NAME} ${HARFBUZZ_LIBRARY} freetype)
+  # HarfBuzz is C++ library.
+  set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
+endif()

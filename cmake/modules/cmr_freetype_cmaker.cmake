@@ -25,6 +25,7 @@ include(GNUInstallDirs)
 
 include(cmr_print_debug_message)
 include(cmr_print_fatal_error)
+include(cmr_print_message)
 include(cmr_print_var_value)
 
 include(cmr_freetype_get_download_params)
@@ -65,7 +66,7 @@ function(cmr_freetype_cmaker)
   # Download tar file.
   #
   if(NOT EXISTS "${lib_ARCH_FILE}")
-    message(STATUS "Download ${lib_URL}")
+    cmr_print_message("Download ${lib_URL}")
     file(
       DOWNLOAD "${lib_URL}" "${lib_ARCH_FILE}"
       EXPECTED_HASH SHA1=${lib_SHA}
@@ -77,7 +78,7 @@ function(cmr_freetype_cmaker)
   # Extract tar file.
   #
   if(NOT EXISTS "${lib_SRC_DIR}")
-    message(STATUS "Extract ${lib_ARCH_FILE}")
+    cmr_print_message("Extract ${lib_ARCH_FILE}")
     file(MAKE_DIRECTORY ${lib_UNPACKED_SRC_DIR})
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E tar xjf ${lib_ARCH_FILE}
@@ -85,6 +86,36 @@ function(cmr_freetype_cmaker)
     )
   endif()
 
+  #-----------------------------------------------------------------------
+  # Overwrite FindHarfBuzz.cmake and set vars for it.
+  #
+  if(WITH_HarfBuzz OR WITH_HARFBUZZ)
+    if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
+      cmr_print_fatal_error(
+        "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
+    endif()
+
+    if(NOT HARFBUZZ_DIR)
+      cmr_print_fatal_error(
+        "Please set HARFBUZZ_DIR with path to installed HarfBuzz library.")
+    endif()
+    set(ENV{HARFBUZZ_DIR} ${HARFBUZZ_DIR})
+
+    if(ANDROID)
+      list(FIND CMAKE_FIND_ROOT_PATH "${HARFBUZZ_DIR}" HARFBUZZ_DIR_INDEX)
+      if(HARFBUZZ_DIR_INDEX EQUAL "-1")
+        list(APPEND CMAKE_FIND_ROOT_PATH "${HARFBUZZ_DIR}")
+      endif()
+    endif()
+
+    cmr_print_message(
+      "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
+    execute_process(
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        ${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/FindHarfBuzz.cmake
+        ${lib_SRC_DIR}/builds/cmake/
+    )
+  endif()
 
   #-----------------------------------------------------------------------
   # Configure library.

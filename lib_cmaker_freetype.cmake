@@ -23,24 +23,78 @@
 
 if(NOT LIBCMAKER_SRC_DIR)
   message(FATAL_ERROR
-    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker modules root")
+    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker root.")
 endif()
 # TODO: prevent multiply includes for CMAKE_MODULE_PATH
 list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
 
-# To find library CMaker source dir.
-set(lcm_LibCMaker_LIB_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
-# TODO: prevent multiply includes for CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_LIB_SRC_DIR}/cmake/modules")
 
 include(CMakeParseArguments) # cmake_parse_arguments
 
 include(cmr_lib_cmaker)
 include(cmr_print_debug_message)
+include(cmr_print_fatal_error)
+include(cmr_print_message)
 include(cmr_print_var_value)
+
+
+if((WITH_HarfBuzz OR WITH_HARFBUZZ) AND NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
+  cmr_print_fatal_error(
+    "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
+endif()
+
+# To find library CMaker source dir.
+set(lcm_LibCMaker_FreeType_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
+# TODO: prevent multiply includes for CMAKE_MODULE_PATH
+list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_FreeType_SRC_DIR}/cmake/modules")
+
 
 function(lib_cmaker_freetype)
   cmake_minimum_required(VERSION 3.2)
+
+# From <freetype sources>/docs/CHANGES:
+#
+#  FreeType can now use the HarfBuzz library to greatly improve the
+#  auto-hinting of  fonts that  use OpenType features:  Many glyphs
+#  that are part  of such features but don't have  cmap entries are
+#  now handled  properly, for  example small caps  or superscripts.
+#  Define the configuration  macro FT_CONFIG_OPTION_USE_HARFBUZZ to
+#  activate HarfBuzz support.
+#  
+#  You need HarfBuzz version 0.9.19 or newer.
+#  
+#  Note that HarfBuzz depends on  FreeType; this currently causes a
+#  chicken-and-egg problem  that can be  solved as follows  in case
+#  HarfBuzz is not yet installed on your system.
+#  
+#    1. Compile  and  install  FreeType without  the  configuration
+#       macro FT_CONFIG_OPTION_USE_HARFBUZZ.
+#  
+#    2. Compile and install HarfBuzz.
+#  
+#    3. Define  macro  FT_CONFIG_OPTION_USE_HARFBUZZ, then  compile
+#       and install FreeType again.
+#  
+#  With FreeType's  `configure' script the procedure  boils down to
+#  configure, build, and install FreeType, then configure, compile,
+#  and  install  HarfBuzz,  then configure,  compile,  and  install
+#  FreeType again (after executing `make distclean').
+      
+  if(DEFINED WITH_HarfBuzz AND DEFINED WITH_HARFBUZZ)
+    unset(WITH_HARFBUZZ)
+  endif()
+  if(NOT DEFINED WITH_HarfBuzz AND DEFINED WITH_HARFBUZZ)
+    set(WITH_HarfBuzz ${WITH_HARFBUZZ})
+    unset(WITH_HARFBUZZ)
+  endif()
+  
+  if(WITH_HarfBuzz)
+    set(WITH_HarfBuzz_NEED ON CACHE BOOL "Mark about the need for HarfBuzz")
+    mark_as_advanced(WITH_HarfBuzz_NEED)
+    if(WITH_HarfBuzz_NEED)
+      set(WITH_HarfBuzz OFF)
+    endif()
+  endif()
 
   set(options
     # optional args
@@ -105,6 +159,17 @@ function(lib_cmaker_freetype)
     endif()
   endforeach()
 
+  if(DEFINED LIBCMAKER_HARFBUZZ_SRC_DIR)
+    list(APPEND lcm_CMAKE_ARGS
+      -DLIBCMAKER_HARFBUZZ_SRC_DIR=${LIBCMAKER_HARFBUZZ_SRC_DIR}
+    )
+  endif()
+  if(DEFINED ENV{HARFBUZZ_DIR})
+    list(APPEND lcm_CMAKE_ARGS
+      -DHARFBUZZ_DIR=$ENV{HARFBUZZ_DIR}
+    )
+  endif()
+
   if(DEFINED BUILD_FRAMEWORK)
     list(APPEND lcm_CMAKE_ARGS
       -DBUILD_FRAMEWORK=${BUILD_FRAMEWORK}
@@ -121,14 +186,66 @@ function(lib_cmaker_freetype)
   # BUILDING
   #-----------------------------------------------------------------------
 
-  cmr_lib_cmaker(
-    VERSION ${arg_VERSION}
-    PROJECT_DIR ${lcm_LibCMaker_LIB_SRC_DIR}
-    DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
-    UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
-    BUILD_DIR ${arg_BUILD_DIR}
-    CMAKE_ARGS ${lcm_CMAKE_ARGS}
-    INSTALL
-  )
+  if(NOT WITH_HarfBuzz)
+    cmr_lib_cmaker(
+      VERSION ${arg_VERSION}
+      PROJECT_DIR ${lcm_LibCMaker_FreeType_SRC_DIR}
+      DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
+      UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
+      BUILD_DIR ${arg_BUILD_DIR}
+      CMAKE_ARGS ${lcm_CMAKE_ARGS}
+      INSTALL
+    )
+  endif()
+  
+  if(WITH_HarfBuzz OR WITH_HarfBuzz_NEED)
+    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    cmr_print_var_value(HB_lib_VERSION)
+    cmr_print_var_value(HB_DOWNLOAD_DIR)
+    cmr_print_var_value(HB_UNPACKED_SRC_DIR)
+    cmr_print_var_value(HB_BUILD_DIR)
+  
+    set(HB_HAVE_FREETYPE ON)
+    
+    include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/lib_cmaker_harfbuzz.cmake)
+    
+    cmr_print_message("Build HarfBuzz with compiled FreeType")
+
+    lib_cmaker_harfbuzz(
+      VERSION ${HB_lib_VERSION}
+      DOWNLOAD_DIR ${HB_DOWNLOAD_DIR}
+      UNPACKED_SRC_DIR ${HB_UNPACKED_SRC_DIR}
+      BUILD_DIR ${HB_BUILD_DIR}
+    )
+
+    if(NOT WITH_HarfBuzz)
+      set(WITH_HarfBuzz ON)
+      set(WITH_HarfBuzz_NEED OFF
+        CACHE BOOL "Mark about the need for HarfBuzz" FORCE
+      )
+
+      list(APPEND lcm_CMAKE_ARGS
+        -DWITH_HarfBuzz=${WITH_HarfBuzz}
+      )
+
+      cmr_print_message(
+        "Rebuild FreeType with compiled HarfBuzz - clear directory ${BUILD_DIR}")
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${BUILD_DIR}
+      )
+    else()
+      cmr_print_message("Build FreeType with compiled HarfBuzz")
+    endif()
+  
+    cmr_lib_cmaker(
+      VERSION ${arg_VERSION}
+      PROJECT_DIR ${lcm_LibCMaker_FreeType_SRC_DIR}
+      DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
+      UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
+      BUILD_DIR ${arg_BUILD_DIR}
+      CMAKE_ARGS ${lcm_CMAKE_ARGS}
+      INSTALL
+    )
+  endif()
 
 endfunction()
