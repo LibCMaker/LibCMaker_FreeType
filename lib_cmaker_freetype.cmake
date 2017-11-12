@@ -228,8 +228,20 @@ function(lib_cmaker_freetype)
         -DWITH_HarfBuzz=${WITH_HarfBuzz}
       )
 
-      cmr_print_message(
-        "Rebuild FreeType with compiled HarfBuzz - clear directory ${BUILD_DIR}")
+      cmr_print_message("Rebuild FreeType with compiled HarfBuzz")
+      find_path(Freetype_INCLUDE_DIR_TO_REMOVE
+        NAMES "ft2build.h"
+        PATH_SUFFIXES "include/freetype2"
+        HINTS ${CMAKE_INSTALL_PREFIX}
+      )
+      if(Freetype_INCLUDE_DIR_TO_REMOVE)
+        cmr_print_message("Clear directory ${Freetype_INCLUDE_DIR_TO_REMOVE}")
+        execute_process(
+          COMMAND ${CMAKE_COMMAND} -E
+            remove_directory ${Freetype_INCLUDE_DIR_TO_REMOVE}
+        )
+      endif()
+      cmr_print_message("Clear directory ${BUILD_DIR}")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${BUILD_DIR}
       )
