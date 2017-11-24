@@ -27,6 +27,10 @@ project(LibCMaker_FreeType_Compile_Test)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
 
+# To use our FindFreetype.cmake
+list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
+
+
 #-----------------------------------------------------------------------
 # Set path to LibCMaker root
 #-----------------------------------------------------------------------
@@ -70,6 +74,10 @@ if(WITH_HarfBuzz)
     "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_HarfBuzz")
   # To find FindHarfBuzz.cmake
   list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/")
+
+  # Needed for lib_cmaker_harfbuzz() to build HarfBuzz with FreeType
+  set(LIBCMAKER_FREETYPE_SRC_DIR
+    "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_FreeType")
 
   set(HB_lib_VERSION "1.6.3")
 

@@ -43,6 +43,11 @@ if((WITH_HarfBuzz OR WITH_HARFBUZZ) AND NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
     "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
 endif()
 
+if((WITH_HarfBuzz OR WITH_HARFBUZZ) AND NOT LIBCMAKER_FREETYPE_SRC_DIR)
+  cmr_print_fatal_error(
+    "Please set LIBCMAKER_FREETYPE_SRC_DIR with path to LibCMaker_FreeType root.")
+endif()
+
 # To find library CMaker source dir.
 set(lcm_LibCMaker_FreeType_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
 # TODO: prevent multiply includes for CMAKE_MODULE_PATH
@@ -167,6 +172,12 @@ function(lib_cmaker_freetype)
   if(DEFINED ENV{HARFBUZZ_DIR})
     list(APPEND lcm_CMAKE_ARGS
       -DHARFBUZZ_DIR=$ENV{HARFBUZZ_DIR}
+    )
+  endif()
+
+  if(DEFINED LIBCMAKER_FREETYPE_SRC_DIR)
+    list(APPEND lcm_CMAKE_ARGS
+      -DLIBCMAKER_FREETYPE_SRC_DIR=${LIBCMAKER_FREETYPE_SRC_DIR}
     )
   endif()
 
