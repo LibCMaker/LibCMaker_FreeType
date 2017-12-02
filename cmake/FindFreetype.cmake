@@ -56,14 +56,15 @@ find_path(
   ft2build.h
   HINTS
     ENV FREETYPE_DIR
-  PATHS
-    /usr/X11R6
-    /usr/local/X11R6
-    /usr/local/X11
-    /usr/freeware
-    ENV GTKMM_BASEPATH
-    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+#  PATHS
+#    /usr/X11R6
+#    /usr/local/X11R6
+#    /usr/local/X11
+#    /usr/freeware
+#    ENV GTKMM_BASEPATH
+#    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
+#    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+  NO_DEFAULT_PATH
   PATH_SUFFIXES
     include/freetype2
     include
@@ -77,14 +78,15 @@ find_path(
     config/ftheader.h
   HINTS
     ENV FREETYPE_DIR
-  PATHS
-    /usr/X11R6
-    /usr/local/X11R6
-    /usr/local/X11
-    /usr/freeware
-    ENV GTKMM_BASEPATH
-    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+#  PATHS
+#    /usr/X11R6
+#    /usr/local/X11R6
+#    /usr/local/X11
+#    /usr/freeware
+#    ENV GTKMM_BASEPATH
+#    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
+#    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+  NO_DEFAULT_PATH
   PATH_SUFFIXES
     include/freetype2
     include
@@ -98,14 +100,15 @@ find_library(FREETYPE_LIBRARY
     freetype219
   HINTS
     ENV FREETYPE_DIR
-  PATHS
-    /usr/X11R6
-    /usr/local/X11R6
-    /usr/local/X11
-    /usr/freeware
-    ENV GTKMM_BASEPATH
-    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+#  PATHS
+#    /usr/X11R6
+#    /usr/local/X11R6
+#    /usr/local/X11
+#    /usr/freeware
+#    ENV GTKMM_BASEPATH
+#    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
+#    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+  NO_DEFAULT_PATH
   PATH_SUFFIXES
     lib
 )
