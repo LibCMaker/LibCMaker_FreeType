@@ -252,9 +252,9 @@ function(lib_cmaker_freetype)
             remove_directory ${Freetype_INCLUDE_DIR_TO_REMOVE}
         )
       endif()
-      cmr_print_message("Clear directory ${BUILD_DIR}")
+      cmr_print_message("Clear directory ${arg_BUILD_DIR}")
       execute_process(
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${BUILD_DIR}
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${arg_BUILD_DIR}
       )
     else()
       cmr_print_message("Build FreeType with compiled HarfBuzz")
