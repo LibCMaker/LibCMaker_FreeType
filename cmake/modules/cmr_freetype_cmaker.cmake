@@ -104,13 +104,6 @@ function(cmr_freetype_cmaker)
     endif()
     set(ENV{HARFBUZZ_DIR} ${HARFBUZZ_DIR})
 
-    if(ANDROID)
-      list(FIND CMAKE_FIND_ROOT_PATH "${HARFBUZZ_DIR}" HARFBUZZ_DIR_INDEX)
-      if(HARFBUZZ_DIR_INDEX EQUAL "-1")
-        list(APPEND CMAKE_FIND_ROOT_PATH "${HARFBUZZ_DIR}")
-      endif()
-    endif()
-
     cmr_print_message(
       "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
     execute_process(
