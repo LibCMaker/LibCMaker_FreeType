@@ -57,6 +57,8 @@ list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_FreeType_SRC_DIR}/cmake/modules")
 function(lib_cmaker_freetype)
   cmake_minimum_required(VERSION 3.2)
 
+  cmr_print_message("======== Build library: FreeType ========")
+
 # From <freetype sources>/docs/CHANGES:
 #
 #  FreeType can now use the HarfBuzz library to greatly improve the
