@@ -149,6 +149,11 @@ function(lib_cmaker_freetype)
   # Library specific build arguments.
   #-----------------------------------------------------------------------
 
+  if(ANDROID AND BUILD_SHARED_LIBS AND WITH_HarfBuzz_NEED)
+    set(BUILD_SHARED_LIBS OFF)
+    set(BUILD_SHARED_LIBS_NEED ON)
+  endif()
+
   set(lcm_CMAKE_ARGS)
 
   if(DEFINED FREETYPE_NO_DIST)
@@ -262,6 +267,11 @@ function(lib_cmaker_freetype)
       cmr_print_message("Build FreeType with compiled HarfBuzz")
     endif()
   
+    if(BUILD_SHARED_LIBS_NEED)
+      set(BUILD_SHARED_LIBS ON)
+      set(BUILD_SHARED_LIBS_HARFBUZZ ON)
+    endif()
+
     cmr_lib_cmaker(
       VERSION ${arg_VERSION}
       PROJECT_DIR ${lcm_LibCMaker_FreeType_SRC_DIR}
@@ -271,6 +281,20 @@ function(lib_cmaker_freetype)
       CMAKE_ARGS ${lcm_CMAKE_ARGS}
       INSTALL
     )
+    
+    if(BUILD_SHARED_LIBS_HARFBUZZ)
+      execute_process(
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${HB_BUILD_DIR}
+      )
+  
+      lib_cmaker_harfbuzz(
+        VERSION ${HB_lib_VERSION}
+        DOWNLOAD_DIR ${HB_DOWNLOAD_DIR}
+        UNPACKED_SRC_DIR ${HB_UNPACKED_SRC_DIR}
+        BUILD_DIR ${HB_BUILD_DIR}
+      )
+    endif()
+    
   endif()
 
 endfunction()

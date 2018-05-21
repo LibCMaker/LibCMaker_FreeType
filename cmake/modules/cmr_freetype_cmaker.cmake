@@ -117,5 +117,9 @@ function(cmr_freetype_cmaker)
   # Configure library.
   #
   add_subdirectory(${lib_SRC_DIR} ${lib_BUILD_SRC_DIR})
+  
+  if(WITH_HarfBuzz OR WITH_HARFBUZZ)
+    set_property(TARGET freetype PROPERTY LINKER_LANGUAGE CXX)
+  endif()
 
 endfunction()
