@@ -268,6 +268,7 @@ function(lib_cmaker_freetype)
     endif()
   
     if(BUILD_SHARED_LIBS_NEED)
+      cmr_print_message("Rebuild FreeType as shared library")
       set(BUILD_SHARED_LIBS ON)
       set(BUILD_SHARED_LIBS_HARFBUZZ ON)
     endif()
@@ -283,6 +284,9 @@ function(lib_cmaker_freetype)
     )
     
     if(BUILD_SHARED_LIBS_HARFBUZZ)
+      cmr_print_message("Rebuild HarfBuzz as shared library")
+      
+      cmr_print_message("Clear directory ${HB_BUILD_DIR}")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${HB_BUILD_DIR}
       )
