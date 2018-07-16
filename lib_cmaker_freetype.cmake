@@ -156,11 +156,21 @@ function(lib_cmaker_freetype)
 
   set(lcm_CMAKE_ARGS)
 
-  if(DEFINED FREETYPE_NO_DIST)
-    list(APPEND lcm_CMAKE_ARGS
-      -DFREETYPE_NO_DIST=${FREETYPE_NO_DIST}
-    )
-  endif()
+  set(LIB_VARS
+    FREETYPE_NO_DIST
+    LIBCMAKER_HARFBUZZ_SRC_DIR
+    LIBCMAKER_FREETYPE_SRC_DIR
+    BUILD_FRAMEWORK
+    IOS_PLATFORM
+  )
+
+  foreach(d ${LIB_VARS})
+    if(DEFINED ${d})
+      list(APPEND lcm_CMAKE_ARGS
+        -D${d}=${${d}}
+      )
+    endif()
+  endforeach()
 
   foreach(d ZLIB BZip2 PNG HarfBuzz)
     string(TOUPPER "${d}" D)
@@ -171,35 +181,13 @@ function(lib_cmaker_freetype)
     endif()
   endforeach()
 
-  if(DEFINED LIBCMAKER_HARFBUZZ_SRC_DIR)
-    list(APPEND lcm_CMAKE_ARGS
-      -DLIBCMAKER_HARFBUZZ_SRC_DIR=${LIBCMAKER_HARFBUZZ_SRC_DIR}
-    )
-  endif()
   if(DEFINED ENV{HARFBUZZ_DIR})
     list(APPEND lcm_CMAKE_ARGS
       -DHARFBUZZ_DIR=$ENV{HARFBUZZ_DIR}
     )
   endif()
 
-  if(DEFINED LIBCMAKER_FREETYPE_SRC_DIR)
-    list(APPEND lcm_CMAKE_ARGS
-      -DLIBCMAKER_FREETYPE_SRC_DIR=${LIBCMAKER_FREETYPE_SRC_DIR}
-    )
-  endif()
 
-  if(DEFINED BUILD_FRAMEWORK)
-    list(APPEND lcm_CMAKE_ARGS
-      -DBUILD_FRAMEWORK=${BUILD_FRAMEWORK}
-    )
-  endif()
-  if(DEFINED IOS_PLATFORM)
-    list(APPEND lcm_CMAKE_ARGS
-      -DIOS_PLATFORM=${IOS_PLATFORM}
-    )
-  endif()
-  
-  
   #-----------------------------------------------------------------------
   # BUILDING
   #-----------------------------------------------------------------------
