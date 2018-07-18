@@ -21,43 +21,41 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+set(lib_NAME "FreeType")
+
+# To find library's LibCMaker source dir.
+set(lcm_${lib_NAME}_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
+
 if(NOT LIBCMAKER_SRC_DIR)
   message(FATAL_ERROR
     "Please set LIBCMAKER_SRC_DIR with path to LibCMaker root.")
 endif()
-# TODO: prevent multiply includes for CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
 
-
-include(CMakeParseArguments) # cmake_parse_arguments
-
-include(cmr_lib_cmaker)
-include(cmr_print_debug_message)
-include(cmr_print_fatal_error)
-include(cmr_print_message)
-include(cmr_print_var_value)
-
-
-if((WITH_HarfBuzz OR WITH_HARFBUZZ) AND NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
-  cmr_print_fatal_error(
-    "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
-endif()
-
-if((WITH_HarfBuzz OR WITH_HARFBUZZ) AND NOT LIBCMAKER_FREETYPE_SRC_DIR)
-  cmr_print_fatal_error(
-    "Please set LIBCMAKER_FREETYPE_SRC_DIR with path to LibCMaker_FreeType root.")
-endif()
-
-# To find library CMaker source dir.
-set(lcm_LibCMaker_FreeType_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
-# TODO: prevent multiply includes for CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${lcm_LibCMaker_FreeType_SRC_DIR}/cmake/modules")
-
+include(${LIBCMAKER_SRC_DIR}/cmake/modules/lib_cmaker_init.cmake)
 
 function(lib_cmaker_freetype)
-  cmake_minimum_required(VERSION 3.2)
 
-  cmr_print_message("======== Build library: FreeType ========")
+  # Make the required checks.
+  # Add library's and common LibCMaker module paths to CMAKE_MODULE_PATH.
+  # Unset lcm_CMAKE_ARGS.
+  # Set vars:
+  #   cmr_CMAKE_MIN_VER
+  #   cmr_lib_cmaker_main_PATH
+  #   cmr_printers_PATH
+  #   lower_lib_NAME
+  # Parce args and set vars:
+  #   arg_VERSION
+  #   arg_DOWNLOAD_DIR
+  #   arg_UNPACKED_DIR
+  #   arg_BUILD_DIR
+  lib_cmaker_init(${ARGN})
+
+  include(${cmr_lib_cmaker_main_PATH})
+  include(${cmr_printers_PATH})
+
+  cmake_minimum_required(VERSION ${cmr_CMAKE_MIN_VER})
+## --- Common part of the lib_cmaker_<lib_name> function ---
 
 # From <freetype sources>/docs/CHANGES:
 #
@@ -96,6 +94,12 @@ function(lib_cmaker_freetype)
   endif()
   
   if(WITH_HarfBuzz)
+    if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
+      cmr_print_fatal_error(
+        "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
+    endif()
+    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+
     set(WITH_HarfBuzz_NEED ON CACHE BOOL "Mark about the need for HarfBuzz")
     mark_as_advanced(WITH_HarfBuzz_NEED)
     if(WITH_HarfBuzz_NEED)
@@ -103,74 +107,15 @@ function(lib_cmaker_freetype)
     endif()
   endif()
 
-  set(options
-    # optional args
-  )
-  
-  set(oneValueArgs
-    # required args
-    VERSION BUILD_DIR
-    # optional args
-    DOWNLOAD_DIR UNPACKED_SRC_DIR
-  )
-
-  set(multiValueArgs
-    # optional args
-  )
-
-  cmake_parse_arguments(arg
-      "${options}" "${oneValueArgs}" "${multiValueArgs}" "${ARGN}")
-  # -> lib_VERSION
-  # -> lib_BUILD_DIR
-  # -> lib_* ...
-
-  cmr_print_var_value(LIBCMAKER_SRC_DIR)
-
-  cmr_print_var_value(arg_VERSION)
-  cmr_print_var_value(arg_BUILD_DIR)
-
-  cmr_print_var_value(arg_DOWNLOAD_DIR)
-  cmr_print_var_value(arg_UNPACKED_SRC_DIR)
-
-  # Required args
-  if(NOT arg_VERSION)
-    cmr_print_fatal_error("Argument VERSION is not defined.")
-  endif()
-  if(NOT arg_BUILD_DIR)
-    cmr_print_fatal_error("Argument BUILD_DIR is not defined.")
-  endif()
-  if(arg_UNPARSED_ARGUMENTS)
-    cmr_print_fatal_error(
-      "There are unparsed arguments: ${arg_UNPARSED_ARGUMENTS}")
-  endif()
-
 
   #-----------------------------------------------------------------------
-  # Library specific build arguments.
+  # Library specific build arguments
   #-----------------------------------------------------------------------
 
   if(ANDROID AND BUILD_SHARED_LIBS AND WITH_HarfBuzz_NEED)
     set(BUILD_SHARED_LIBS OFF)
     set(BUILD_SHARED_LIBS_NEED ON)
   endif()
-
-  set(lcm_CMAKE_ARGS)
-
-  set(LIB_VARS
-    FREETYPE_NO_DIST
-    LIBCMAKER_HARFBUZZ_SRC_DIR
-    LIBCMAKER_FREETYPE_SRC_DIR
-    BUILD_FRAMEWORK
-    IOS_PLATFORM
-  )
-
-  foreach(d ${LIB_VARS})
-    if(DEFINED ${d})
-      list(APPEND lcm_CMAKE_ARGS
-        -D${d}=${${d}}
-      )
-    endif()
-  endforeach()
 
   foreach(d ZLIB BZip2 PNG HarfBuzz)
     string(TOUPPER "${d}" D)
@@ -187,42 +132,66 @@ function(lib_cmaker_freetype)
     )
   endif()
 
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+  set(cmr_LIB_VARS
+    FREETYPE_NO_DIST
+    LIBCMAKER_HARFBUZZ_SRC_DIR
+    LIBCMAKER_FREETYPE_SRC_DIR
+    BUILD_FRAMEWORK
+    IOS_PLATFORM
+  )
+
+  foreach(d ${cmr_LIB_VARS})
+    if(DEFINED ${d})
+      list(APPEND lcm_CMAKE_ARGS
+        -D${d}=${${d}}
+      )
+    endif()
+  endforeach()
+## --- Common part of the lib_cmaker_<lib_name> function ---
+
 
   #-----------------------------------------------------------------------
-  # BUILDING
+  # Building
   #-----------------------------------------------------------------------
 
   if(NOT WITH_HarfBuzz)
-    cmr_lib_cmaker(
-      VERSION ${arg_VERSION}
-      PROJECT_DIR ${lcm_LibCMaker_FreeType_SRC_DIR}
-      DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
-      UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
-      BUILD_DIR ${arg_BUILD_DIR}
-      CMAKE_ARGS ${lcm_CMAKE_ARGS}
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+    cmr_lib_cmaker_main(
+      NAME          ${lib_NAME}
+      VERSION       ${arg_VERSION}
+      BASE_DIR      ${lcm_${lib_NAME}_SRC_DIR}
+      DOWNLOAD_DIR  ${arg_DOWNLOAD_DIR}
+      UNPACKED_DIR  ${arg_UNPACKED_DIR}
+      BUILD_DIR     ${arg_BUILD_DIR}
+      CMAKE_ARGS    ${lcm_CMAKE_ARGS}
       INSTALL
     )
+## --- Common part of the lib_cmaker_<lib_name> function ---
   endif()
   
   if(WITH_HarfBuzz OR WITH_HarfBuzz_NEED)
     cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
     cmr_print_var_value(HB_lib_VERSION)
     cmr_print_var_value(HB_DOWNLOAD_DIR)
-    cmr_print_var_value(HB_UNPACKED_SRC_DIR)
+    cmr_print_var_value(HB_UNPACKED_DIR)
     cmr_print_var_value(HB_BUILD_DIR)
   
     set(HB_HAVE_FREETYPE ON)
-    
-    include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/lib_cmaker_harfbuzz.cmake)
+    set(LIBCMAKER_FREETYPE_SRC_DIR ${lcm_${lib_NAME}_SRC_DIR})
     
     cmr_print_message("Build HarfBuzz with compiled FreeType")
 
+    include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/lib_cmaker_harfbuzz.cmake)
     lib_cmaker_harfbuzz(
-      VERSION ${HB_lib_VERSION}
-      DOWNLOAD_DIR ${HB_DOWNLOAD_DIR}
-      UNPACKED_SRC_DIR ${HB_UNPACKED_SRC_DIR}
-      BUILD_DIR ${HB_BUILD_DIR}
+      VERSION       ${HB_lib_VERSION}
+      DOWNLOAD_DIR  ${HB_DOWNLOAD_DIR}
+      UNPACKED_DIR  ${HB_UNPACKED_DIR}
+      BUILD_DIR     ${HB_BUILD_DIR}
     )
+
+    # Need to restore 'lib_NAME' after 'lib_cmaker_harfbuzz.cmake'.
+    set(lib_NAME "FreeType")
 
     if(NOT WITH_HarfBuzz)
       set(WITH_HarfBuzz ON)
@@ -261,17 +230,23 @@ function(lib_cmaker_freetype)
       set(BUILD_SHARED_LIBS_HARFBUZZ ON)
     endif()
 
-    cmr_lib_cmaker(
-      VERSION ${arg_VERSION}
-      PROJECT_DIR ${lcm_LibCMaker_FreeType_SRC_DIR}
-      DOWNLOAD_DIR ${arg_DOWNLOAD_DIR}
-      UNPACKED_SRC_DIR ${arg_UNPACKED_SRC_DIR}
-      BUILD_DIR ${arg_BUILD_DIR}
-      CMAKE_ARGS ${lcm_CMAKE_ARGS}
+## +++ Common part of the lib_cmaker_<lib_name> function +++
+    cmr_lib_cmaker_main(
+      NAME          ${lib_NAME}
+      VERSION       ${arg_VERSION}
+      BASE_DIR      ${lcm_${lib_NAME}_SRC_DIR}
+      DOWNLOAD_DIR  ${arg_DOWNLOAD_DIR}
+      UNPACKED_DIR  ${arg_UNPACKED_DIR}
+      BUILD_DIR     ${arg_BUILD_DIR}
+      CMAKE_ARGS    ${lcm_CMAKE_ARGS}
       INSTALL
     )
+## --- Common part of the lib_cmaker_<lib_name> function ---
     
     if(BUILD_SHARED_LIBS_HARFBUZZ)
+      # Need to restore 'lib_NAME' for 'lib_cmaker_harfbuzz'.
+      set(lib_NAME "HarfBuzz")
+
       cmr_print_message("Rebuild HarfBuzz as shared library")
       
       cmr_print_message("Clear directory ${HB_BUILD_DIR}")
@@ -282,7 +257,7 @@ function(lib_cmaker_freetype)
       lib_cmaker_harfbuzz(
         VERSION ${HB_lib_VERSION}
         DOWNLOAD_DIR ${HB_DOWNLOAD_DIR}
-        UNPACKED_SRC_DIR ${HB_UNPACKED_SRC_DIR}
+        UNPACKED_DIR ${HB_UNPACKED_DIR}
         BUILD_DIR ${HB_BUILD_DIR}
       )
     endif()

@@ -21,33 +21,27 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-include(cmr_print_fatal_error)
+# Part of "LibCMaker/cmake/modules/cmr_get_download_params.cmake".
 
-function(cmr_freetype_get_download_params
-    version
-    out_url out_sha out_src_dir_name out_tar_file_name)
-
-  set(lib_base_url "http://download.savannah.gnu.org/releases/freetype")
-  
-  # TODO: get url and sha1 for all FreeType version
   # TODO: check with freetype-${version}.tar.bz2.sig
   if(version VERSION_EQUAL "2.7.1")
-    set(lib_sha "4d08a9a6567c6332d58e9a5f9a7e9e3fbce66789")
+    set(arch_file_sha "4d08a9a6567c6332d58e9a5f9a7e9e3fbce66789")
   endif()
   if(version VERSION_EQUAL "2.8.1")
-    set(lib_sha "417bb3747c4ac95b6f2652024a53fad45581fa1c")
+    set(arch_file_sha "417bb3747c4ac95b6f2652024a53fad45581fa1c")
   endif()
 
-  if(NOT DEFINED lib_sha)
-    cmr_print_fatal_error("Library version ${version} is not supported.")
-  endif()
+  set(base_url "http://download.savannah.gnu.org/releases/freetype")
+  set(src_dir_name    "freetype-${version}")
+  set(arch_file_name  "${src_dir_name}.tar.bz2")
+  set(unpack_to_dir   "${unpacked_dir}/${src_dir_name}")
 
-  set(lib_src_name "freetype-${version}")
-  set(lib_tar_file_name "${lib_src_name}.tar.bz2")
-  set(lib_url "${lib_base_url}/${lib_tar_file_name}")
-
-  set(${out_url} "${lib_url}" PARENT_SCOPE)
-  set(${out_sha} "${lib_sha}" PARENT_SCOPE)
-  set(${out_src_dir_name} "${lib_src_name}" PARENT_SCOPE)
-  set(${out_tar_file_name} "${lib_tar_file_name}" PARENT_SCOPE)
-endfunction()
+  set(${out_ARCH_SRC_URL}   "${base_url}/${arch_file_name}" PARENT_SCOPE)
+  set(${out_ARCH_DST_FILE}  "${download_dir}/${arch_file_name}" PARENT_SCOPE)
+  set(${out_ARCH_FILE_SHA}  "${arch_file_sha}" PARENT_SCOPE)
+  set(${out_SHA_ALG}        "SHA1" PARENT_SCOPE)
+  set(${out_UNPACK_TO_DIR}  "${unpack_to_dir}" PARENT_SCOPE)
+  set(${out_UNPACKED_SOURCES_DIR}
+    "${unpack_to_dir}/${src_dir_name}" PARENT_SCOPE
+  )
+  set(${out_VERSION_BUILD_DIR} "${build_dir}/${src_dir_name}" PARENT_SCOPE)
