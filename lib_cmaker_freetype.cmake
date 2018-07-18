@@ -85,6 +85,8 @@ function(lib_cmaker_freetype)
 #  and  install  HarfBuzz,  then configure,  compile,  and  install
 #  FreeType again (after executing `make distclean').
       
+  set(FT_lib_NAME ${lib_NAME})
+
   if(DEFINED WITH_HarfBuzz AND DEFINED WITH_HARFBUZZ)
     unset(WITH_HARFBUZZ)
   endif()
@@ -191,7 +193,8 @@ function(lib_cmaker_freetype)
     )
 
     # Need to restore 'lib_NAME' after 'lib_cmaker_harfbuzz.cmake'.
-    set(lib_NAME "FreeType")
+    set(HB_lib_NAME ${lib_NAME})
+    set(lib_NAME ${FT_lib_NAME})
 
     if(NOT WITH_HarfBuzz)
       set(WITH_HarfBuzz ON)
@@ -245,7 +248,7 @@ function(lib_cmaker_freetype)
     
     if(BUILD_SHARED_LIBS_HARFBUZZ)
       # Need to restore 'lib_NAME' for 'lib_cmaker_harfbuzz'.
-      set(lib_NAME "HarfBuzz")
+      set(lib_NAME ${HB_lib_NAME})
 
       cmr_print_message("Rebuild HarfBuzz as shared library")
       
