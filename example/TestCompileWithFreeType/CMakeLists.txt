@@ -133,8 +133,13 @@ endif()
 #-----------------------------------------------------------------------
 
 # Build test executables.
+
 add_executable(${PROJECT_NAME} test_with_freetype.c)
+
+# FreeType
 target_link_libraries(${PROJECT_NAME} freetype)
+
+# HarfBuzz
 if(WITH_HarfBuzz)
   target_include_directories(${PROJECT_NAME} PUBLIC ${HARFBUZZ_INCLUDE_DIR})
   # From <freetype sources>/docs/CHANGES:
