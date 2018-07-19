@@ -29,6 +29,7 @@
       cmr_print_fatal_error(
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
     endif()
+    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
 
     if(NOT HARFBUZZ_DIR)
       cmr_print_fatal_error(
@@ -47,7 +48,7 @@
 
   # Configure library.
   add_subdirectory(${lib_SRC_DIR} ${lib_VERSION_BUILD_DIR})
-  
+
   if(WITH_HarfBuzz OR WITH_HARFBUZZ)
     set_property(TARGET freetype PROPERTY LINKER_LANGUAGE CXX)
   endif()
