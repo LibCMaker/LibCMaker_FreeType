@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.3)
 
 project(LibCMaker_FreeType_Compile_Test C CXX)
 
@@ -92,12 +92,6 @@ if(WITH_HarfBuzz)
   set(HB_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
   set(HB_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
   set(HB_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_hb")
-
-  # Need to find FreeType in lib_cmaker_harfbuzz().
-  # ENV{FREETYPE_DIR} is not need to find Freetype in CONFIG mode.
-  set(ENV{FREETYPE_DIR} "${CMAKE_INSTALL_PREFIX}")
-  # Need to find HarfBuzz in lib_cmaker_freetype() and here.
-  set(ENV{HARFBUZZ_DIR} "${CMAKE_INSTALL_PREFIX}")
 endif()
 
 

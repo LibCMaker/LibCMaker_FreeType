@@ -54,8 +54,8 @@
 find_path(
   FREETYPE_INCLUDE_DIR_ft2build
   ft2build.h
-  HINTS
-    ENV FREETYPE_DIR
+#  HINTS
+#    ENV FREETYPE_DIR
 #  PATHS
 #    /usr/X11R6
 #    /usr/local/X11R6
@@ -64,7 +64,9 @@ find_path(
 #    ENV GTKMM_BASEPATH
 #    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
 #    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
-  NO_DEFAULT_PATH
+  NO_CMAKE_ENVIRONMENT_PATH
+  NO_SYSTEM_ENVIRONMENT_PATH
+  NO_CMAKE_SYSTEM_PATH
   PATH_SUFFIXES
     include/freetype2
     include
@@ -76,8 +78,8 @@ find_path(
   NAMES
     freetype/config/ftheader.h
     config/ftheader.h
-  HINTS
-    ENV FREETYPE_DIR
+#  HINTS
+#    ENV FREETYPE_DIR
 #  PATHS
 #    /usr/X11R6
 #    /usr/local/X11R6
@@ -86,7 +88,9 @@ find_path(
 #    ENV GTKMM_BASEPATH
 #    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
 #    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
-  NO_DEFAULT_PATH
+  NO_CMAKE_ENVIRONMENT_PATH
+  NO_SYSTEM_ENVIRONMENT_PATH
+  NO_CMAKE_SYSTEM_PATH
   PATH_SUFFIXES
     include/freetype2
     include
@@ -98,8 +102,8 @@ find_library(FREETYPE_LIBRARY
     freetyped freetype
     libfreetyped libfreetype
     freetype219
-  HINTS
-    ENV FREETYPE_DIR
+#  HINTS
+#    ENV FREETYPE_DIR
 #  PATHS
 #    /usr/X11R6
 #    /usr/local/X11R6
@@ -108,7 +112,9 @@ find_library(FREETYPE_LIBRARY
 #    ENV GTKMM_BASEPATH
 #    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
 #    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
-  NO_DEFAULT_PATH
+  NO_CMAKE_ENVIRONMENT_PATH
+  NO_SYSTEM_ENVIRONMENT_PATH
+  NO_CMAKE_SYSTEM_PATH
   PATH_SUFFIXES
     lib
 )

@@ -31,12 +31,6 @@
     endif()
     cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
 
-    if(NOT HARFBUZZ_DIR)
-      cmr_print_fatal_error(
-        "Please set HARFBUZZ_DIR with path to installed HarfBuzz library.")
-    endif()
-    set(ENV{HARFBUZZ_DIR} ${HARFBUZZ_DIR})
-
     cmr_print_message(
       "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
     execute_process(
