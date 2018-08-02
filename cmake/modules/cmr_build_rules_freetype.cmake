@@ -30,6 +30,8 @@
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
     endif()
     cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    # To use our FindHarfBuzz.cmake in FreeType's CMakeLists.txt
+    list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake")
 
     cmr_print_message(
       "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
