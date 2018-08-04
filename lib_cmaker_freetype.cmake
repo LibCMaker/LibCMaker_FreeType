@@ -97,10 +97,10 @@ function(lib_cmaker_freetype)
   
   if(WITH_HarfBuzz)
     if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
-      cmr_print_fatal_error(
+      cmr_print_error(
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
     endif()
-    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
 
     set(WITH_HarfBuzz_NEED ON CACHE BOOL "Mark about the need for HarfBuzz")
     mark_as_advanced(WITH_HarfBuzz_NEED)
@@ -167,16 +167,16 @@ function(lib_cmaker_freetype)
   endif()
   
   if(WITH_HarfBuzz OR WITH_HarfBuzz_NEED)
-    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
-    cmr_print_var_value(HB_lib_VERSION)
-    cmr_print_var_value(HB_DOWNLOAD_DIR)
-    cmr_print_var_value(HB_UNPACKED_DIR)
-    cmr_print_var_value(HB_BUILD_DIR)
+    cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    cmr_print_value(HB_lib_VERSION)
+    cmr_print_value(HB_DOWNLOAD_DIR)
+    cmr_print_value(HB_UNPACKED_DIR)
+    cmr_print_value(HB_BUILD_DIR)
   
     set(HB_HAVE_FREETYPE ON)
     set(LIBCMAKER_FREETYPE_SRC_DIR ${lcm_${cmr_lib_NAME}_SRC_DIR})
     
-    cmr_print_message("Build HarfBuzz with compiled FreeType")
+    cmr_print_status("Build HarfBuzz with compiled FreeType")
 
     include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/lib_cmaker_harfbuzz.cmake)
     lib_cmaker_harfbuzz(
@@ -200,29 +200,29 @@ function(lib_cmaker_freetype)
         -DWITH_HarfBuzz=${WITH_HarfBuzz}
       )
 
-      cmr_print_message("Rebuild FreeType with compiled HarfBuzz")
+      cmr_print_status("Rebuild FreeType with compiled HarfBuzz")
       find_path(Freetype_INCLUDE_DIR_TO_REMOVE
         NAMES "ft2build.h"
         PATH_SUFFIXES "include/freetype2"
         HINTS ${CMAKE_INSTALL_PREFIX}
       )
       if(Freetype_INCLUDE_DIR_TO_REMOVE)
-        cmr_print_message("Clear directory ${Freetype_INCLUDE_DIR_TO_REMOVE}")
+        cmr_print_status("Clear directory ${Freetype_INCLUDE_DIR_TO_REMOVE}")
         execute_process(
           COMMAND ${CMAKE_COMMAND} -E
             remove_directory ${Freetype_INCLUDE_DIR_TO_REMOVE}
         )
       endif()
-      cmr_print_message("Clear directory ${arg_BUILD_DIR}")
+      cmr_print_status("Clear directory ${arg_BUILD_DIR}")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${arg_BUILD_DIR}
       )
     else()
-      cmr_print_message("Build FreeType with compiled HarfBuzz")
+      cmr_print_status("Build FreeType with compiled HarfBuzz")
     endif()
   
     if(BUILD_SHARED_LIBS_NEED)
-      cmr_print_message("Rebuild FreeType as shared library")
+      cmr_print_status("Rebuild FreeType as shared library")
       set(BUILD_SHARED_LIBS ON)
       set(BUILD_SHARED_LIBS_HARFBUZZ ON)
     endif()
@@ -244,9 +244,9 @@ function(lib_cmaker_freetype)
       # Need to restore 'cmr_lib_NAME' for 'lib_cmaker_harfbuzz'.
       set(cmr_lib_NAME ${HB_lib_NAME})
 
-      cmr_print_message("Rebuild HarfBuzz as shared library")
+      cmr_print_status("Rebuild HarfBuzz as shared library")
       
-      cmr_print_message("Clear directory ${HB_BUILD_DIR}")
+      cmr_print_status("Clear directory ${HB_BUILD_DIR}")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${HB_BUILD_DIR}
       )

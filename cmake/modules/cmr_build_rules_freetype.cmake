@@ -26,14 +26,14 @@
   # Overwrite FindHarfBuzz.cmake and set vars to it.
   if(WITH_HarfBuzz OR WITH_HARFBUZZ)
     if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
-      cmr_print_fatal_error(
+      cmr_print_error(
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
     endif()
-    cmr_print_var_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
     # To use our FindHarfBuzz.cmake in FreeType's CMakeLists.txt
     list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake")
 
-    cmr_print_message(
+    cmr_print_status(
       "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
