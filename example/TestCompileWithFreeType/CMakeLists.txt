@@ -63,7 +63,7 @@ set(LIBCMAKER_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker")
 #set(BUILD_SHARED_LIBS ON)
 
 # Vars to lib_cmaker_freetype().
-set(FT_lib_VERSION  "2.8.1")
+set(FT_lib_VERSION  "2.9.1")
 set(FT_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(FT_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
 set(FT_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_freetype")
@@ -88,10 +88,12 @@ if(WITH_HarfBuzz)
   # HarfBuzz with FreeType.
   # LIBCMAKER_FREETYPE_SRC_DIR is set in lib_cmaker_freetype().
 
-  set(HB_lib_VERSION  "1.6.3")
+  set(HB_lib_VERSION  "1.8.6")
   set(HB_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
   set(HB_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
   set(HB_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_hb")
+
+  set(COPY_HARFBUZZ_CMAKE_BUILD_SCRIPTS ON)
 endif()
 
 

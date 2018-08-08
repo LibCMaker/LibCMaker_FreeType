@@ -30,6 +30,9 @@
   if(version VERSION_EQUAL "2.8.1")
     set(arch_file_sha "417bb3747c4ac95b6f2652024a53fad45581fa1c")
   endif()
+  if(version VERSION_EQUAL "2.9.1")
+    set(arch_file_sha "220c82062171c513e4017c523d196933c9de4a7d")
+  endif()
 
   set(base_url "http://download.savannah.gnu.org/releases/freetype")
   set(src_dir_name    "freetype-${version}")
