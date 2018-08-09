@@ -407,17 +407,31 @@ endif ()
 include(GNUInstallDirs)
 
 if (NOT SKIP_INSTALL_HEADERS AND NOT SKIP_INSTALL_ALL)
+  if(UNIX)
+    install(
+      # Note the trailing slash in the argument to `DIRECTORY'!
+      DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
+        COMPONENT headers
+        PATTERN "internal" EXCLUDE
+        PATTERN "ftconfig.h" EXCLUDE
+        PATTERN "ftoption.h" EXCLUDE)
+    install(
+      FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2/freetype/config
+        COMPONENT headers)
+  else()
+    install(
+      # Note the trailing slash in the argument to `DIRECTORY'!
+      DIRECTORY ${PROJECT_SOURCE_DIR}/include/
+        DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
+        COMPONENT headers
+        PATTERN "internal" EXCLUDE
+        PATTERN "ftoption.h" EXCLUDE)
+  endif()
+
   install(
-    # Note the trailing slash in the argument to `DIRECTORY'!
-    DIRECTORY ${PROJECT_SOURCE_DIR}/include/
-      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2
-      COMPONENT headers
-      PATTERN "internal" EXCLUDE
-      PATTERN "ftconfig.h" EXCLUDE
-      PATTERN "ftoption.h" EXCLUDE)
-  install(
-    FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftconfig.h
-          ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
+    FILES ${PROJECT_BINARY_DIR}/include/freetype/config/ftoption.h
       DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/freetype2/freetype/config
       COMPONENT headers)
 endif ()
