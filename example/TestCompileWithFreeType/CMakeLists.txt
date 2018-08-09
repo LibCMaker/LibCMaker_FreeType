@@ -68,13 +68,15 @@ set(FT_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
 set(FT_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
 set(FT_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_freetype")
 
+set(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS ON)
+
 # Library specific vars.
 set(FREETYPE_NO_DIST ON)
 
-set(WITH_ZLIB OFF)
-set(WITH_BZip2 OFF)
-set(WITH_PNG OFF)
-set(WITH_HarfBuzz OFF)
+set(FT_WITH_ZLIB OFF)
+set(FT_WITH_BZip2 OFF)
+set(FT_WITH_PNG OFF)
+set(FT_WITH_HarfBuzz OFF)
 
 if(WITH_HarfBuzz)
   # Need for lib_cmaker_freetype() to build HarfBuzz.
