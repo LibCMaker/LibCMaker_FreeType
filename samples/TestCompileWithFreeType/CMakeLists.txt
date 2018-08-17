@@ -40,37 +40,37 @@ if(ANDROID)
   list(APPEND CMAKE_FIND_ROOT_PATH "${CMAKE_INSTALL_PREFIX}")
 endif()
 
-# To use our FindFreetype.cmake.
-list(APPEND CMAKE_MODULE_PATH
-  "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_FreeType/cmake"
-)
-
 
 #-----------------------------------------------------------------------
 # Set path to LibCMaker root
 #-----------------------------------------------------------------------
 
-set(LIBCMAKER_SRC_DIR "${PROJECT_SOURCE_DIR}/cmake/LibCMaker")
-# Uncomment it if need functions from LibCMaker.
-#list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_SRC_DIR}/cmake/modules")
+set(LibCMaker_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker")
+# Uncomment it if need functions from LibCMaker
+#list(APPEND CMAKE_MODULE_PATH "${LibCMaker_DIR}/cmake")
 
 
 #-----------------------------------------------------------------------
 # Set vars to LibCMaker_FreeType
 #-----------------------------------------------------------------------
 
-# Standard CMake vars.
-#set(BUILD_SHARED_LIBS ON)
-
-# Vars to lib_cmaker_freetype().
+set(FT_lib_NAME     "FreeType")
 set(FT_lib_VERSION  "2.9.1")
-set(FT_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
-set(FT_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
-set(FT_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_freetype")
+set(FT_lib_DIR      "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker_FreeType")
+
+# To use below for sample sources.
+set(cmr_UNPACKED_DIR ${CMAKE_CURRENT_BINARY_DIR}/download/unpacked)
+
+# To use our FindFreetype.cmake.
+list(APPEND CMAKE_MODULE_PATH "${FT_lib_DIR}/cmake/modules")
 
 set(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS ON)
 
-# Library specific vars.
+
+#-----------------------------------------------------------------------
+# Library specific vars and options
+#-----------------------------------------------------------------------
+
 set(FREETYPE_NO_DIST ON)
 
 set(FT_WITH_ZLIB OFF)
@@ -78,52 +78,41 @@ set(FT_WITH_BZip2 OFF)
 set(FT_WITH_PNG OFF)
 set(FT_WITH_HarfBuzz OFF)
 
-if(WITH_HarfBuzz)
-  # Need for lib_cmaker_freetype() to build HarfBuzz.
-  set(LIBCMAKER_HARFBUZZ_SRC_DIR
-    "${PROJECT_SOURCE_DIR}/cmake/LibCMaker_HarfBuzz"
-  )
+if(FT_WITH_HarfBuzz)
+  set(HB_lib_NAME     "HarfBuzz")
+  set(HB_lib_VERSION  "1.8.6")
+  set(HB_lib_DIR      "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker_HarfBuzz")
+
   # To find FindHarfBuzz.cmake.
-  list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/")
+  list(APPEND CMAKE_MODULE_PATH "${HB_lib_DIR}/cmake/modules")
+
+  # Need for lib_cmaker_freetype() to build HarfBuzz.
+  set(LIBCMAKER_HARFBUZZ_SRC_DIR ${HB_lib_DIR})
 
   # LIBCMAKER_FREETYPE_SRC_DIR needed for lib_cmaker_harfbuzz() to build
   # HarfBuzz with FreeType.
   # LIBCMAKER_FREETYPE_SRC_DIR is set in lib_cmaker_freetype().
-
-  set(HB_lib_VERSION  "1.8.6")
-  set(HB_DOWNLOAD_DIR "${PROJECT_BINARY_DIR}")
-  set(HB_UNPACKED_DIR "${PROJECT_BINARY_DIR}")
-  set(HB_BUILD_DIR    "${PROJECT_BINARY_DIR}/build_hb")
 
   set(COPY_HARFBUZZ_CMAKE_BUILD_SCRIPTS ON)
 endif()
 
 
 #-----------------------------------------------------------------------
-# Build and install the FreeType
+# Build, install and find the FreeType
 #-----------------------------------------------------------------------
 
-include(
-  ${PROJECT_SOURCE_DIR}/cmake/LibCMaker_FreeType/lib_cmaker_freetype.cmake)
-
-# Make compile, build and install the library at a config CMake phase.
-lib_cmaker_freetype(
-  VERSION       ${FT_lib_VERSION}
-  DOWNLOAD_DIR  ${FT_DOWNLOAD_DIR}
-  UNPACKED_DIR  ${FT_UNPACKED_DIR}
-  BUILD_DIR     ${FT_BUILD_DIR}
+# Make build and install the library at a config CMake phase.
+include(${LibCMaker_DIR}/cmake/cmr_find_package.cmake)
+cmr_find_package(
+  LibCMaker_DIR   ${LibCMaker_DIR}
+  NAME            ${FT_lib_NAME}
+  VERSION         ${FT_lib_VERSION}
+  LIB_DIR         ${FT_lib_DIR}
+  REQUIRED
+#  CONFIG
+  NOT_USE_VERSION_IN_FIND_PACKAGE
+  CUSTOM_LOGIC_FILE ${FT_lib_DIR}/cmake/cmr_find_package_freetype_custom.cmake
 )
-
-
-#-----------------------------------------------------------------------
-# find_package()
-#-----------------------------------------------------------------------
-
-# Use newly got library.
-find_package(Freetype REQUIRED CONFIG)
-if(WITH_HarfBuzz)
-  find_package(HarfBuzz REQUIRED)
-endif()
 
 
 #-----------------------------------------------------------------------
@@ -138,7 +127,7 @@ add_executable(${PROJECT_NAME} test_with_freetype.c)
 target_link_libraries(${PROJECT_NAME} freetype)
 
 # HarfBuzz
-if(WITH_HarfBuzz)
+if(FT_WITH_HarfBuzz)
   target_include_directories(${PROJECT_NAME} PUBLIC ${HARFBUZZ_INCLUDE_DIR})
   # From <freetype sources>/docs/CHANGES:
   #  Note that HarfBuzz depends on FreeType.

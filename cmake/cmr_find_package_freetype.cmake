@@ -21,41 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-## +++ Common part of the lib_cmaker_<lib_name> function +++
-set(cmr_lib_NAME "FreeType")
-
-# To find library's LibCMaker source dir.
-set(lcm_${cmr_lib_NAME}_SRC_DIR ${CMAKE_CURRENT_LIST_DIR})
-
-if(NOT LIBCMAKER_SRC_DIR)
-  message(FATAL_ERROR
-    "Please set LIBCMAKER_SRC_DIR with path to LibCMaker root.")
-endif()
-
-include(${LIBCMAKER_SRC_DIR}/cmake/modules/lib_cmaker_init.cmake)
-
-function(lib_cmaker_freetype)
-
-  # Make the required checks.
-  # Add library's and common LibCMaker module paths to CMAKE_MODULE_PATH.
-  # Unset lcm_CMAKE_ARGS.
-  # Set vars:
-  #   cmr_CMAKE_MIN_VER
-  #   cmr_lib_cmaker_main_PATH
-  #   cmr_printers_PATH
-  #   lower_lib_NAME
-  # Parce args and set vars:
-  #   arg_VERSION
-  #   arg_DOWNLOAD_DIR
-  #   arg_UNPACKED_DIR
-  #   arg_BUILD_DIR
-  lib_cmaker_init(${ARGN})
-
-  include(${cmr_lib_cmaker_main_PATH})
-  include(${cmr_printers_PATH})
-
-  cmake_minimum_required(VERSION ${cmr_CMAKE_MIN_VER})
-## --- Common part of the lib_cmaker_<lib_name> function ---
+# Part of "LibCMaker/cmake/cmr_find_package.cmake".
 
 # From <freetype sources>/docs/CHANGES:
 #
@@ -85,7 +51,7 @@ function(lib_cmaker_freetype)
 #  and  install  HarfBuzz,  then configure,  compile,  and  install
 #  FreeType again (after executing `make distclean').
 
-  set(FT_lib_NAME ${cmr_lib_NAME})
+  set(FT_lib_NAME ${find_NAME})
 
   if(DEFINED FT_WITH_HarfBuzz AND DEFINED FT_WITH_HARFBUZZ)
     unset(FT_WITH_HARFBUZZ)
@@ -122,14 +88,14 @@ function(lib_cmaker_freetype)
   foreach(d ZLIB BZip2 PNG HarfBuzz)
     string(TOUPPER "${d}" D)
     if(DEFINED FT_WITH_${d} OR DEFINED FT_WITH_${D})
-      list(APPEND lcm_CMAKE_ARGS
+      list(APPEND find_CMAKE_ARGS
         -DFT_WITH_${D}=${FT_WITH_${D}}
       )
     endif()
   endforeach()
 
 ## +++ Common part of the lib_cmaker_<lib_name> function +++
-  set(cmr_LIB_VARS
+  set(find_LIB_VARS
     COPY_FREETYPE_CMAKE_BUILD_SCRIPTS
     FREETYPE_NO_DIST
     LIBCMAKER_HARFBUZZ_SRC_DIR
@@ -138,9 +104,9 @@ function(lib_cmaker_freetype)
     IOS_PLATFORM
   )
 
-  foreach(d ${cmr_LIB_VARS})
+  foreach(d ${find_LIB_VARS})
     if(DEFINED ${d})
-      list(APPEND lcm_CMAKE_ARGS
+      list(APPEND find_CMAKE_ARGS
         -D${d}=${${d}}
       )
     endif()
@@ -157,14 +123,15 @@ function(lib_cmaker_freetype)
   if(NOT FT_WITH_HarfBuzz)
 ## +++ Common part of the lib_cmaker_<lib_name> function +++
     cmr_lib_cmaker_main(
-      NAME          ${cmr_lib_NAME}
-      VERSION       ${arg_VERSION}
+      LibCMaker_DIR ${find_LibCMaker_DIR}
+      NAME          ${find_NAME}
+      VERSION       ${find_VERSION}
       LANGUAGES     ${FT_lib_LANGUAGES}
-      BASE_DIR      ${lcm_${cmr_lib_NAME}_SRC_DIR}
-      DOWNLOAD_DIR  ${arg_DOWNLOAD_DIR}
-      UNPACKED_DIR  ${arg_UNPACKED_DIR}
-      BUILD_DIR     ${arg_BUILD_DIR}
-      CMAKE_ARGS    ${lcm_CMAKE_ARGS}
+      BASE_DIR      ${find_LIB_DIR}
+      DOWNLOAD_DIR  ${cmr_DOWNLOAD_DIR}
+      UNPACKED_DIR  ${cmr_UNPACKED_DIR}
+      BUILD_DIR     ${lib_BUILD_DIR}
+      CMAKE_ARGS    ${find_CMAKE_ARGS}
       INSTALL
     )
 ## --- Common part of the lib_cmaker_<lib_name> function ---
@@ -172,27 +139,22 @@ function(lib_cmaker_freetype)
 
   if(FT_WITH_HarfBuzz OR FT_WITH_HarfBuzz_NEED)
     cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
+    cmr_print_value(HB_lib_NAME)
     cmr_print_value(HB_lib_VERSION)
-    cmr_print_value(HB_DOWNLOAD_DIR)
-    cmr_print_value(HB_UNPACKED_DIR)
-    cmr_print_value(HB_BUILD_DIR)
 
     set(HB_HAVE_FREETYPE ON)
-    set(LIBCMAKER_FREETYPE_SRC_DIR ${lcm_${cmr_lib_NAME}_SRC_DIR})
+    set(LIBCMAKER_FREETYPE_SRC_DIR ${find_LIB_DIR})
 
     cmr_print_status("Build HarfBuzz with compiled FreeType")
 
-    include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/lib_cmaker_harfbuzz.cmake)
-    lib_cmaker_harfbuzz(
-      VERSION       ${HB_lib_VERSION}
-      DOWNLOAD_DIR  ${HB_DOWNLOAD_DIR}
-      UNPACKED_DIR  ${HB_UNPACKED_DIR}
-      BUILD_DIR     ${HB_BUILD_DIR}
+#    include(${find_LibCMaker_DIR}/cmake/cmr_find_package.cmake)
+    cmr_find_package(
+      LibCMaker_DIR   ${find_LibCMaker_DIR}
+      NAME            ${HB_lib_NAME}
+      VERSION         ${HB_lib_VERSION}
+      LIB_DIR         ${HB_lib_DIR}
+      REQUIRED
     )
-
-    # Need to restore 'cmr_lib_NAME' after 'lib_cmaker_harfbuzz.cmake'.
-    set(HB_lib_NAME ${cmr_lib_NAME})
-    set(cmr_lib_NAME ${FT_lib_NAME})
 
     if(NOT FT_WITH_HarfBuzz)
       set(FT_WITH_HarfBuzz ON)
@@ -200,7 +162,7 @@ function(lib_cmaker_freetype)
         CACHE BOOL "Mark about the need for HarfBuzz" FORCE
       )
 
-      list(APPEND lcm_CMAKE_ARGS
+      list(APPEND find_CMAKE_ARGS
         -DFT_WITH_HarfBuzz=${FT_WITH_HarfBuzz}
       )
 
@@ -217,9 +179,9 @@ function(lib_cmaker_freetype)
             remove_directory ${Freetype_INCLUDE_DIR_TO_REMOVE}
         )
       endif()
-      cmr_print_status("Clear directory ${arg_BUILD_DIR}")
+      cmr_print_status("Clear directory ${lib_BUILD_DIR}")
       execute_process(
-        COMMAND ${CMAKE_COMMAND} -E remove_directory ${arg_BUILD_DIR}
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${lib_BUILD_DIR}
       )
     else()
       cmr_print_status("Build FreeType with compiled HarfBuzz")
@@ -233,37 +195,48 @@ function(lib_cmaker_freetype)
 
 ## +++ Common part of the lib_cmaker_<lib_name> function +++
     cmr_lib_cmaker_main(
-      NAME          ${cmr_lib_NAME}
-      VERSION       ${arg_VERSION}
+      LibCMaker_DIR ${find_LibCMaker_DIR}
+      NAME          ${find_NAME}
+      VERSION       ${find_VERSION}
       LANGUAGES     ${FT_lib_LANGUAGES}
-      BASE_DIR      ${lcm_${cmr_lib_NAME}_SRC_DIR}
-      DOWNLOAD_DIR  ${arg_DOWNLOAD_DIR}
-      UNPACKED_DIR  ${arg_UNPACKED_DIR}
-      BUILD_DIR     ${arg_BUILD_DIR}
-      CMAKE_ARGS    ${lcm_CMAKE_ARGS}
+      BASE_DIR      ${find_LIB_DIR}
+      DOWNLOAD_DIR  ${cmr_DOWNLOAD_DIR}
+      UNPACKED_DIR  ${cmr_UNPACKED_DIR}
+      BUILD_DIR     ${lib_BUILD_DIR}
+      CMAKE_ARGS    ${find_CMAKE_ARGS}
       INSTALL
     )
 ## --- Common part of the lib_cmaker_<lib_name> function ---
 
     if(BUILD_SHARED_LIBS_HARFBUZZ)
-      # Need to restore 'cmr_lib_NAME' for 'lib_cmaker_harfbuzz'.
-      set(cmr_lib_NAME ${HB_lib_NAME})
 
       cmr_print_status("Rebuild HarfBuzz as shared library")
-
+      find_path(HarfBuzz_INCLUDE_DIR_TO_REMOVE
+        NAMES "hb.h"
+        PATH_SUFFIXES "include/harfbuzz"
+        HINTS ${CMAKE_INSTALL_PREFIX}
+      )
+      if(HarfBuzz_INCLUDE_DIR_TO_REMOVE)
+        cmr_print_status("Clear directory ${HarfBuzz_INCLUDE_DIR_TO_REMOVE}")
+        execute_process(
+          COMMAND ${CMAKE_COMMAND} -E
+            remove_directory ${HarfBuzz_INCLUDE_DIR_TO_REMOVE}
+        )
+      endif()
+      set(HB_BUILD_DIR ${cmr_BUILD_DIR}/build_${HB_lib_NAME})
       cmr_print_status("Clear directory ${HB_BUILD_DIR}")
       execute_process(
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${HB_BUILD_DIR}
       )
+      unset(HARFBUZZ_INCLUDE_DIR CACHE)
 
-      lib_cmaker_harfbuzz(
-        VERSION       ${HB_lib_VERSION}
-        DOWNLOAD_DIR  ${HB_DOWNLOAD_DIR}
-        UNPACKED_DIR  ${HB_UNPACKED_DIR}
-        BUILD_DIR     ${HB_BUILD_DIR}
+      cmr_find_package(
+        LibCMaker_DIR   ${LibCMaker_DIR}
+        NAME            ${HB_lib_NAME}
+        VERSION         ${HB_lib_VERSION}
+        LIB_DIR         ${HB_lib_DIR}
+        REQUIRED
       )
     endif()
 
   endif()
-
-endfunction()

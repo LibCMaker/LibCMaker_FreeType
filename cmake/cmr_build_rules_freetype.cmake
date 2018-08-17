@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Part of "LibCMaker/cmake/modules/cmr_build_rules.cmake".
+# Part of "LibCMaker/cmake/cmr_build_rules.cmake".
 
   # Overwrite FindHarfBuzz.cmake and set vars to it.
   if(WITH_HarfBuzz OR WITH_HARFBUZZ)
@@ -31,24 +31,23 @@
     endif()
     cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
     # To use our FindHarfBuzz.cmake in FreeType's CMakeLists.txt
-    list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake")
+    list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/modules")
 
     cmr_print_status(
       "Overwrite FindHarfBuzz.cmake from LibCMaker_HarfBuzz in unpacked sources.")
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/FindHarfBuzz.cmake
+        ${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/modules/FindHarfBuzz.cmake
         ${lib_SRC_DIR}/builds/cmake/
     )
   endif()
 
   # Copy CMake build scripts.
   if(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS)
-    cmr_print_status(
-      "Copy CMake build scripts to unpacked sources.")
+    cmr_print_status("Copy CMake build scripts to unpacked sources.")
     execute_process(
       COMMAND ${CMAKE_COMMAND} -E copy_directory
-        ${lib_BASE_DIR}/cmake/modules/freetype-${lib_VERSION}
+        ${lib_BASE_DIR}/patch/freetype-${lib_VERSION}
         ${lib_SRC_DIR}/
     )
   endif()

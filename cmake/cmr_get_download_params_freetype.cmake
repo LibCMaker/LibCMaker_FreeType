@@ -21,7 +21,7 @@
 #    along with this program. If not, see <http://www.gnu.org/licenses/>.
 # ****************************************************************************
 
-# Part of "LibCMaker/cmake/modules/cmr_get_download_params.cmake".
+# Part of "LibCMaker/cmake/cmr_get_download_params.cmake".
 
   # TODO: check with freetype-${version}.tar.bz2.sig
   if(version VERSION_EQUAL "2.7.1")
