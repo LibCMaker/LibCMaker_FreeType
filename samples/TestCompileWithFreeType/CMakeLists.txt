@@ -86,7 +86,7 @@ if(FT_WITH_HarfBuzz)
   # To find FindHarfBuzz.cmake.
   list(APPEND CMAKE_MODULE_PATH "${HB_lib_DIR}/cmake/modules")
 
-  # Need for lib_cmaker_freetype() to build HarfBuzz.
+  # Need in cmr_build_rules_freetype to build HarfBuzz.
   set(LIBCMAKER_HARFBUZZ_SRC_DIR ${HB_lib_DIR})
 
   # LIBCMAKER_FREETYPE_SRC_DIR needed for lib_cmaker_harfbuzz() to build
@@ -109,7 +109,7 @@ cmr_find_package(
   VERSION         ${FT_lib_VERSION}
   LIB_DIR         ${FT_lib_DIR}
   REQUIRED
-#  CONFIG
+  FIND_MODULE_NAME Freetype
   NOT_USE_VERSION_IN_FIND_PACKAGE
   CUSTOM_LOGIC_FILE ${FT_lib_DIR}/cmake/cmr_find_package_freetype_custom.cmake
 )
@@ -124,7 +124,7 @@ cmr_find_package(
 add_executable(${PROJECT_NAME} test_with_freetype.c)
 
 # FreeType
-target_link_libraries(${PROJECT_NAME} freetype)
+target_link_libraries(${PROJECT_NAME} Freetype::Freetype)
 
 # HarfBuzz
 if(FT_WITH_HarfBuzz)

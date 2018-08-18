@@ -22,7 +22,7 @@
 # ****************************************************************************
 
     # Try to find already installed lib.
-    find_package(${module_NAME} ${module_version} CONFIG QUIET ${find_args})
+    find_package(${module_NAME} ${module_version} QUIET ${find_args})
     if(FT_WITH_HarfBuzz)
       find_package(HarfBuzz QUIET ${find_args})
     endif()
@@ -35,7 +35,7 @@
       if(find_REQUIRED)
         list(APPEND find_args REQUIRED)
       endif()
-      find_package(${module_NAME} ${module_version} CONFIG ${find_args})
+      find_package(${module_NAME} ${module_version} ${find_args})
       if(FT_WITH_HarfBuzz)
         find_package(HarfBuzz ${find_args})
       endif()
