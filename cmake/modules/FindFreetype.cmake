@@ -60,12 +60,15 @@
 # everything still works.
 
 set(FREETYPE_FIND_ARGS
-  HINTS
-    ENV FREETYPE_DIR
-  PATHS
-    ENV GTKMM_BASEPATH
-    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
-    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+#  HINTS
+#    ENV FREETYPE_DIR
+#  PATHS
+#    ENV GTKMM_BASEPATH
+#    [HKEY_CURRENT_USER\\SOFTWARE\\gtkmm\\2.4;Path]
+#    [HKEY_LOCAL_MACHINE\\SOFTWARE\\gtkmm\\2.4;Path]
+  NO_CMAKE_ENVIRONMENT_PATH
+  NO_SYSTEM_ENVIRONMENT_PATH
+  NO_CMAKE_SYSTEM_PATH
 )
 
 find_path(
@@ -109,7 +112,8 @@ if(NOT FREETYPE_LIBRARY)
     PATH_SUFFIXES
       lib
   )
-  include(${CMAKE_CURRENT_LIST_DIR}/SelectLibraryConfigurations.cmake)
+#  include(${CMAKE_CURRENT_LIST_DIR}/SelectLibraryConfigurations.cmake)
+  include(SelectLibraryConfigurations)
   select_library_configurations(FREETYPE)
 else()
   # on Windows, ensure paths are in canonical format (forward slahes):
@@ -141,7 +145,8 @@ if(FREETYPE_INCLUDE_DIR_freetype2 AND FREETYPE_H)
       if(VLINE MATCHES "^#[\t ]*define[\t ]+FREETYPE_${VPART}[\t ]+([0-9]+)$")
         set(FREETYPE_VERSION_PART "${CMAKE_MATCH_1}")
         if(FREETYPE_VERSION_STRING)
-          string(APPEND FREETYPE_VERSION_STRING ".${FREETYPE_VERSION_PART}")
+#          string(APPEND FREETYPE_VERSION_STRING ".${FREETYPE_VERSION_PART}")
+          set(FREETYPE_VERSION_STRING "${FREETYPE_VERSION_STRING}.${FREETYPE_VERSION_PART}")
         else()
           set(FREETYPE_VERSION_STRING "${FREETYPE_VERSION_PART}")
         endif()
@@ -151,7 +156,8 @@ if(FREETYPE_INCLUDE_DIR_freetype2 AND FREETYPE_H)
   endforeach()
 endif()
 
-include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+#include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 
 find_package_handle_standard_args(
   Freetype
