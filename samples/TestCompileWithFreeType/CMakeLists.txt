@@ -25,8 +25,8 @@ cmake_minimum_required(VERSION 3.4)
 
 project(LibCMaker_FreeType_Compile_Test C CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
-set(cmr_PRINT_DEBUG ON)
+option(CMAKE_VERBOSE_MAKEFILE "CMAKE_VERBOSE_MAKEFILE" OFF)
+option(cmr_PRINT_DEBUG "cmr_PRINT_DEBUG" OFF)
 
 
 #-----------------------------------------------------------------------
@@ -42,96 +42,80 @@ endif()
 
 
 #-----------------------------------------------------------------------
-# Set path to LibCMaker root
+# Set path vars
 #-----------------------------------------------------------------------
 
-set(LibCMaker_DIR "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker")
-# Uncomment it if need functions from LibCMaker
-#list(APPEND CMAKE_MODULE_PATH "${LibCMaker_DIR}/cmake")
+set(LibCMaker_LIB_DIR "${CMAKE_CURRENT_LIST_DIR}/libs")
+set(cmr_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
 
-
-#-----------------------------------------------------------------------
-# Set vars to LibCMaker_FreeType
-#-----------------------------------------------------------------------
-
-set(FT_lib_NAME     "FreeType")
-set(FT_lib_VERSION  "2.9.1")
-set(FT_lib_DIR      "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker_FreeType")
-
-# To use below for sample sources.
-set(cmr_UNPACKED_DIR ${CMAKE_CURRENT_BINARY_DIR}/download/unpacked)
-
-# To use our FindFreetype.cmake.
-list(APPEND CMAKE_MODULE_PATH "${FT_lib_DIR}/cmake/modules")
-
-set(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS ON)
-
-
-#-----------------------------------------------------------------------
-# Library specific vars and options
-#-----------------------------------------------------------------------
-
-set(FREETYPE_NO_DIST ON)
-
-set(FT_WITH_ZLIB OFF)
-set(FT_WITH_BZip2 OFF)
-set(FT_WITH_PNG OFF)
-set(FT_WITH_HarfBuzz OFF)
-
-if(FT_WITH_HarfBuzz)
-  set(HB_lib_NAME     "HarfBuzz")
-  set(HB_lib_VERSION  "1.8.6")
-  set(HB_lib_DIR      "${CMAKE_CURRENT_LIST_DIR}/cmake/LibCMaker_HarfBuzz")
-
-  # To find FindHarfBuzz.cmake.
-  list(APPEND CMAKE_MODULE_PATH "${HB_lib_DIR}/cmake/modules")
-
-  # Need in cmr_build_rules_freetype to build HarfBuzz.
-  set(LIBCMAKER_HARFBUZZ_SRC_DIR ${HB_lib_DIR})
-
-  # LIBCMAKER_FREETYPE_SRC_DIR needed for lib_cmaker_harfbuzz() to build
-  # HarfBuzz with FreeType.
-  # LIBCMAKER_FREETYPE_SRC_DIR is set in lib_cmaker_freetype().
-
-  set(COPY_HARFBUZZ_CMAKE_BUILD_SCRIPTS ON)
+if(NOT cmr_UNPACKED_DIR)
+  set(cmr_UNPACKED_DIR "${PROJECT_BINARY_DIR}/download/unpacked")
 endif()
 
 
 #-----------------------------------------------------------------------
-# Build, install and find the FreeType
+# LibCMaker settings
 #-----------------------------------------------------------------------
 
-# Make build and install the library at a config CMake phase.
-include(${LibCMaker_DIR}/cmake/cmr_find_package.cmake)
-cmr_find_package(
-  LibCMaker_DIR   ${LibCMaker_DIR}
-  NAME            ${FT_lib_NAME}
-  VERSION         ${FT_lib_VERSION}
-  LIB_DIR         ${FT_lib_DIR}
-  REQUIRED
-  FIND_MODULE_NAME Freetype
-  NOT_USE_VERSION_IN_FIND_PACKAGE
-  CUSTOM_LOGIC_FILE ${FT_lib_DIR}/cmake/cmr_find_package_freetype_custom.cmake
+set(LibCMaker_DIR "${LibCMaker_LIB_DIR}/LibCMaker")
+list(APPEND CMAKE_MODULE_PATH "${LibCMaker_DIR}/cmake")
+include(cmr_find_package)
+
+
+#-----------------------------------------------------------------------
+# Download, configure, build, install and find the required libraries
+#-----------------------------------------------------------------------
+
+option(BUILD_TESTING "Build the testing tree." OFF)
+if(BUILD_TESTING)
+  enable_testing()
+  include(${LibCMaker_LIB_DIR}/LibCMaker_GoogleTest/cmr_build_googletest.cmake)
+endif()
+
+if(FT_WITH_HARFBUZZ)
+#  include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
+endif()
+
+include(
+  ${LibCMaker_LIB_DIR}/LibCMaker_FreeType/cmr_build_freetype_with_harfbuzz.cmake
 )
 
 
 #-----------------------------------------------------------------------
-# Link to the library
+# Build the executable of the example
 #-----------------------------------------------------------------------
 
-# Build test executables.
+set(example_src_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
 
-add_executable(${PROJECT_NAME} test_with_freetype.c)
+add_executable(${PROJECT_NAME}
+  ${example_src_DIR}/example.cpp
+)
+set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
+
+
+#-----------------------------------------------------------------------
+# Link to the libraries
+#-----------------------------------------------------------------------
 
 # FreeType
-target_link_libraries(${PROJECT_NAME} Freetype::Freetype)
+target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype)
 
 # HarfBuzz
-if(FT_WITH_HarfBuzz)
-  target_include_directories(${PROJECT_NAME} PUBLIC ${HARFBUZZ_INCLUDE_DIR})
+if(FT_WITH_HARFBUZZ)
+  target_include_directories(${PROJECT_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
   # From <freetype sources>/docs/CHANGES:
   #  Note that HarfBuzz depends on FreeType.
-  target_link_libraries(${PROJECT_NAME} ${HARFBUZZ_LIBRARY} freetype)
+  target_link_libraries(${PROJECT_NAME} PRIVATE
+    ${HARFBUZZ_LIBRARY} Freetype::Freetype
+  )
   # HarfBuzz is C++ library.
   set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
 endif()
+
+
+#-----------------------------------------------------------------------
+# Testing
+#-----------------------------------------------------------------------
+
+set(test_src_DIR "${CMAKE_CURRENT_LIST_DIR}/src")
+add_subdirectory(test)

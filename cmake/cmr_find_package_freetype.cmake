@@ -53,25 +53,17 @@
 
   set(FT_lib_NAME ${find_NAME})
 
-  if(DEFINED FT_WITH_HarfBuzz AND DEFINED FT_WITH_HARFBUZZ)
-    unset(FT_WITH_HARFBUZZ)
-  endif()
-  if(NOT DEFINED FT_WITH_HarfBuzz AND DEFINED FT_WITH_HARFBUZZ)
-    set(FT_WITH_HarfBuzz ${FT_WITH_HARFBUZZ})
-    unset(FT_WITH_HARFBUZZ)
-  endif()
-
-  if(FT_WITH_HarfBuzz)
+  if(FT_WITH_HARFBUZZ)
     if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
       cmr_print_error(
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
     endif()
     cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
 
-    set(FT_WITH_HarfBuzz_NEED ON CACHE BOOL "Mark about the need for HarfBuzz")
-    mark_as_advanced(FT_WITH_HarfBuzz_NEED)
-    if(FT_WITH_HarfBuzz_NEED)
-      set(FT_WITH_HarfBuzz OFF)
+    set(FT_WITH_HARFBUZZ_NEED ON CACHE BOOL "Mark about the need for HarfBuzz")
+    mark_as_advanced(FT_WITH_HARFBUZZ_NEED)
+    if(FT_WITH_HARFBUZZ_NEED)
+      set(FT_WITH_HARFBUZZ OFF)
     endif()
   endif()
 
@@ -80,7 +72,7 @@
   # Library specific build arguments
   #-----------------------------------------------------------------------
 
-  if(ANDROID AND BUILD_SHARED_LIBS AND FT_WITH_HarfBuzz_NEED)
+  if(ANDROID AND BUILD_SHARED_LIBS AND FT_WITH_HARFBUZZ_NEED)
     set(BUILD_SHARED_LIBS OFF)
     set(BUILD_SHARED_LIBS_NEED ON)
   endif()
@@ -120,7 +112,7 @@
 
   set(FT_lib_LANGUAGES CXX C)
 
-  if(NOT FT_WITH_HarfBuzz)
+  if(NOT FT_WITH_HARFBUZZ)
 ## +++ Common part of the lib_cmaker_<lib_name> function +++
     cmr_lib_cmaker_main(
       LibCMaker_DIR ${find_LibCMaker_DIR}
@@ -137,33 +129,24 @@
 ## --- Common part of the lib_cmaker_<lib_name> function ---
   endif()
 
-  if(FT_WITH_HarfBuzz OR FT_WITH_HarfBuzz_NEED)
-    cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
-    cmr_print_value(HB_lib_NAME)
-    cmr_print_value(HB_lib_VERSION)
-
-    set(HB_HAVE_FREETYPE ON)
-    set(LIBCMAKER_FREETYPE_SRC_DIR ${find_LIB_DIR})
-
+  if(FT_WITH_HARFBUZZ OR FT_WITH_HARFBUZZ_NEED)
     cmr_print_status("Build HarfBuzz with compiled FreeType")
+    cmr_print_value(LIBCMAKER_HARFBUZZ_SRC_DIR)
 
-#    include(${find_LibCMaker_DIR}/cmake/cmr_find_package.cmake)
-    cmr_find_package(
-      LibCMaker_DIR   ${find_LibCMaker_DIR}
-      NAME            ${HB_lib_NAME}
-      VERSION         ${HB_lib_VERSION}
-      LIB_DIR         ${HB_lib_DIR}
-      REQUIRED
-    )
+    set(cmr_BUILD_FROM_FREETYPE ON)
+    set(LIBCMAKER_FREETYPE_SRC_DIR ${find_LIB_DIR})
+    option(HB_HAVE_FREETYPE "Enable freetype interop helpers" ON)
 
-    if(NOT FT_WITH_HarfBuzz)
-      set(FT_WITH_HarfBuzz ON)
-      set(FT_WITH_HarfBuzz_NEED OFF
+    include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmr_build_harfbuzz.cmake)
+
+    if(NOT FT_WITH_HARFBUZZ)
+      set(FT_WITH_HARFBUZZ ON)
+      set(FT_WITH_HARFBUZZ_NEED OFF
         CACHE BOOL "Mark about the need for HarfBuzz" FORCE
       )
 
       list(APPEND find_CMAKE_ARGS
-        -DFT_WITH_HarfBuzz=${FT_WITH_HarfBuzz}
+        -DFT_WITH_HARFBUZZ=${FT_WITH_HARFBUZZ}
       )
 
       cmr_print_status("Rebuild FreeType with compiled HarfBuzz")
@@ -209,7 +192,6 @@
 ## --- Common part of the lib_cmaker_<lib_name> function ---
 
     if(BUILD_SHARED_LIBS_HARFBUZZ)
-
       cmr_print_status("Rebuild HarfBuzz as shared library")
       find_path(HarfBuzz_INCLUDE_DIR_TO_REMOVE
         NAMES "hb.h"
@@ -230,13 +212,6 @@
       )
       unset(HARFBUZZ_INCLUDE_DIR CACHE)
 
-      cmr_find_package(
-        LibCMaker_DIR   ${LibCMaker_DIR}
-        NAME            ${HB_lib_NAME}
-        VERSION         ${HB_lib_VERSION}
-        LIB_DIR         ${HB_lib_DIR}
-        REQUIRED
-      )
+      include(${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmr_build_harfbuzz.cmake)
     endif()
-
   endif()

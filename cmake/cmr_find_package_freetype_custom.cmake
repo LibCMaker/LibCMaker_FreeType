@@ -23,11 +23,13 @@
 
     # Try to find already installed lib.
     find_package(${module_NAME} ${module_version} QUIET ${find_args})
-    if(FT_WITH_HarfBuzz)
+    if(FT_WITH_HARFBUZZ)
       find_package(HarfBuzz QUIET ${find_args})
     endif()
 
-    if(NOT ${find_NAME}_FOUND AND NOT ${lib_NAME_UPPER}_FOUND)
+    if(NOT ${find_NAME}_FOUND AND NOT ${lib_NAME_UPPER}_FOUND
+          OR FT_WITH_HARFBUZZ AND NOT HarfBuzz_FOUND AND NOT HARFBUZZ_FOUND)
+
       cmr_print_status("${find_NAME} is not built, build it.")
 
       include(cmr_find_package_${lib_NAME_LOWER})
@@ -36,7 +38,7 @@
         list(APPEND find_args REQUIRED)
       endif()
       find_package(${module_NAME} ${module_version} ${find_args})
-      if(FT_WITH_HarfBuzz)
+      if(FT_WITH_HARFBUZZ)
         find_package(HarfBuzz ${find_args})
       endif()
 
