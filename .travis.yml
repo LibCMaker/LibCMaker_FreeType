@@ -442,6 +442,7 @@ jobs:
 
       before_install:
         - gem install travis
+        - mkdir ${cmr_SAMPLE_DIR}
         - mkdir ${cmr_SAMPLE_LIB_DIR}
         - git clone https://github.com/LibCMaker/LibCMaker.git ${cmr_SAMPLE_LIB_DIR}/LibCMaker
 
