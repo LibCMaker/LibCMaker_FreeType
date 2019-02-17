@@ -57,6 +57,7 @@ option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
 option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
 option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
 option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
+option(DISABLE_FORCE_DEBUG_POSTFIX "Do not add 'd' postfix for Debug build." OFF)
 
 if(FT_WITH_HARFBUZZ)
   set(LIBCMAKER_HARFBUZZ_SRC_DIR "${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz")

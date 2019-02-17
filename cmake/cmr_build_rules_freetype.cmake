@@ -24,7 +24,7 @@
 # Part of "LibCMaker/cmake/cmr_build_rules.cmake".
 
   # Overwrite FindHarfBuzz.cmake and set vars to it.
-  if(WITH_HarfBuzz OR WITH_HARFBUZZ)
+  if(WITH_HARFBUZZ)
     if(NOT LIBCMAKER_HARFBUZZ_SRC_DIR)
       cmr_print_error(
         "Please set LIBCMAKER_HARFBUZZ_SRC_DIR with path to LibCMaker_HarfBuzz root.")
@@ -55,6 +55,6 @@
   # Configure library.
   add_subdirectory(${lib_SRC_DIR} ${lib_VERSION_BUILD_DIR})
 
-  if(WITH_HarfBuzz OR WITH_HARFBUZZ)
+  if(WITH_HARFBUZZ)
     set_property(TARGET freetype PROPERTY LINKER_LANGUAGE CXX)
   endif()
