@@ -439,6 +439,7 @@ jobs:
 # Trigger the building of the dependent libs.
     - stage: Trigger downstreams
       name: "Trigger downstreams"
+      if: branch = skipped  # TODO: remove it after fix Windows build with secure vars and add secure var TRAVIS_ACCESS_TOKEN.
 
       before_install:
         - gem install travis
