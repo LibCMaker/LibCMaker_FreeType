@@ -1,3 +1,3 @@
-# LibCMaker_FreeType example
+# LibCMaker_Dirent example
 
-TODO: make docs.
+See the main repository [LibCMaker](https://github.com/LibCMaker/LibCMaker) for the build instructions.
