@@ -27,7 +27,7 @@
       find_package(HarfBuzz QUIET ${find_args})
     endif()
 
-    if(NOT ${find_NAME}_FOUND AND NOT ${lib_NAME_UPPER}_FOUND
+    if(NOT ${module_NAME}_FOUND AND NOT ${module_NAME_UPPER}_FOUND
           OR FT_WITH_HARFBUZZ AND NOT HarfBuzz_FOUND AND NOT HARFBUZZ_FOUND)
 
       cmr_print_status("${find_NAME} is not built, build it.")

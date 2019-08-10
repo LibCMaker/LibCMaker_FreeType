@@ -115,7 +115,6 @@ if (APPLE)
 
     # iOS only uses static libraries
     set(BUILD_SHARED_LIBS OFF)
-
     set(CMAKE_TOOLCHAIN_FILE
       ${CMAKE_SOURCE_DIR}/builds/cmake/iOS.cmake)
   endif ()
