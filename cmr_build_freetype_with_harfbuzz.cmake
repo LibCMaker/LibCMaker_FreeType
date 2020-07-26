@@ -29,9 +29,9 @@
 # Lib's name, version, paths
 #-----------------------------------------------------------------------
 
-set(FT_lib_NAME      "FreeType")
-set(FT_lib_VERSION   "2.9.1")
-set(FT_lib_DIR       "${CMAKE_CURRENT_LIST_DIR}")
+set(FT_lib_NAME "FreeType")
+set(FT_lib_VERSION "2.9.1" CACHE STRING "FT_lib_VERSION")
+set(FT_lib_DIR "${CMAKE_CURRENT_LIST_DIR}" CACHE PATH "FT_lib_DIR")
 
 # To use our Find<LibName>.cmake.
 list(APPEND CMAKE_MODULE_PATH "${FT_lib_DIR}/cmake/modules")
@@ -42,25 +42,33 @@ list(APPEND CMAKE_MODULE_PATH "${FT_lib_DIR}/cmake/modules")
 #-----------------------------------------------------------------------
 
 # Used in 'cmr_build_rules_harfbuzz.cmake'
-set(LIBCMAKER_FREETYPE_SRC_DIR ${FT_lib_DIR})
+set(
+  LIBCMAKER_FREETYPE_SRC_DIR ${FT_lib_DIR}
+  CACHE PATH "LIBCMAKER_FREETYPE_SRC_DIR"
+)
 
-set(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS ON)
+option(COPY_FREETYPE_CMAKE_BUILD_SCRIPTS "COPY_FREETYPE_CMAKE_BUILD_SCRIPTS" ON)
 
 
 #-----------------------------------------------------------------------
 # Library specific vars and options
 #-----------------------------------------------------------------------
 
-set(FREETYPE_NO_DIST ON)
+option(FREETYPE_NO_DIST "FREETYPE_NO_DIST" ON)
 
 option(FT_WITH_ZLIB "Use system zlib instead of internal library." OFF)
 option(FT_WITH_BZIP2 "Support bzip2 compressed fonts." OFF)
 option(FT_WITH_PNG "Support PNG compressed OpenType embedded bitmaps." OFF)
 option(FT_WITH_HARFBUZZ "Improve auto-hinting of OpenType fonts." OFF)
-option(DISABLE_FORCE_DEBUG_POSTFIX "Do not add 'd' postfix for Debug build." OFF)
+option(
+  DISABLE_FORCE_DEBUG_POSTFIX "Do not add 'd' postfix for Debug build." OFF
+)
 
 if(FT_WITH_HARFBUZZ)
-  set(LIBCMAKER_HARFBUZZ_SRC_DIR "${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz")
+  set(
+    LIBCMAKER_HARFBUZZ_SRC_DIR "${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz"
+    CACHE PATH "LIBCMAKER_HARFBUZZ_SRC_DIR"
+  )
   # To use our FindHarfBuzz.cmake.
   list(APPEND CMAKE_MODULE_PATH "${LIBCMAKER_HARFBUZZ_SRC_DIR}/cmake/modules")
 endif()
