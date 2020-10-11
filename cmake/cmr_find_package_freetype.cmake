@@ -154,7 +154,7 @@
       find_path(Freetype_INCLUDE_DIR_TO_REMOVE
         NAMES "ft2build.h"
         PATH_SUFFIXES "include/freetype2"
-        HINTS ${CMAKE_INSTALL_PREFIX}
+        HINTS ${cmr_INSTALL_DIR}
       )
       if(Freetype_INCLUDE_DIR_TO_REMOVE)
         cmr_print_status("Clear directory ${Freetype_INCLUDE_DIR_TO_REMOVE}")
@@ -197,7 +197,7 @@
       find_path(HarfBuzz_INCLUDE_DIR_TO_REMOVE
         NAMES "hb.h"
         PATH_SUFFIXES "include/harfbuzz"
-        HINTS ${CMAKE_INSTALL_PREFIX}
+        HINTS ${cmr_INSTALL_DIR}
       )
       if(HarfBuzz_INCLUDE_DIR_TO_REMOVE)
         cmr_print_status("Clear directory ${HarfBuzz_INCLUDE_DIR_TO_REMOVE}")
