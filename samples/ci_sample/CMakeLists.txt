@@ -44,7 +44,7 @@ cmr_common_sample_1st_part()
 # Download, configure, build, install and find the required libraries
 #-----------------------------------------------------------------------
 
-if(FT_WITH_HARFBUZZ)
+if(FT_WITH_HarfBuzz)
 #  include(${LibCMaker_LIB_DIR}/LibCMaker_HarfBuzz/cmr_build_harfbuzz.cmake)
 endif()
 
@@ -74,7 +74,7 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
 target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype)
 
 # HarfBuzz
-if(FT_WITH_HARFBUZZ)
+if(FT_WITH_HarfBuzz)
   target_include_directories(${PROJECT_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
   # From <freetype sources>/docs/CHANGES:
   #  Note that HarfBuzz depends on FreeType.

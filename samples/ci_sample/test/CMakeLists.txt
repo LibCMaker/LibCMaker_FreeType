@@ -38,7 +38,7 @@ if(BUILD_TESTING)
   target_link_libraries(${test_NAME} PRIVATE Freetype::Freetype)
 
   # HarfBuzz
-  if(FT_WITH_HARFBUZZ)
+  if(FT_WITH_HarfBuzz)
     target_include_directories(${test_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
     # From <freetype sources>/docs/CHANGES:
     #  Note that HarfBuzz depends on FreeType.

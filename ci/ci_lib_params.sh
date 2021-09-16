@@ -40,5 +40,5 @@ cmr_LIB_DEPS_NAMES=(
 # ==== CMake configuration params ====
 
 cmr_LIB_CMAKE_CONFIG_PARAMS=(
-  -DFT_WITH_HARFBUZZ=ON
+  -DFT_WITH_HarfBuzz=ON
 )

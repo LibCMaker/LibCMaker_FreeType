@@ -33,10 +33,13 @@
   if(version VERSION_EQUAL "2.9.1")
     set(arch_file_sha "220c82062171c513e4017c523d196933c9de4a7d")
   endif()
+  if(version VERSION_EQUAL "2.11.0")
+    set(arch_file_sha "f1635a1ed68ee467be33036d8881b7b89177663f")
+  endif()
 
   set(base_url "http://download.savannah.gnu.org/releases/freetype")
   set(src_dir_name    "freetype-${version}")
-  set(arch_file_name  "${src_dir_name}.tar.bz2")
+  set(arch_file_name  "${src_dir_name}.tar.xz")
   set(unpack_to_dir   "${unpacked_dir}/${src_dir_name}")
 
   set(${out_ARCH_SRC_URL}   "${base_url}/${arch_file_name}" PARENT_SCOPE)
