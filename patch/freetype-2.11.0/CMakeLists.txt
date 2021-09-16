@@ -97,7 +97,7 @@
 # FreeType explicitly marks the API to be exported and relies on the compiler
 # to hide all other symbols. CMake supports a C_VISBILITY_PRESET property
 # starting with 2.8.12.
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.0)
 
 if (NOT CMAKE_VERSION VERSION_LESS 3.3)
   # Allow symbol visibility settings also on static libraries. CMake < 3.3
@@ -110,40 +110,40 @@ endif ()
 
 include(CheckIncludeFile)
 
-# CMAKE_TOOLCHAIN_FILE must be set before `project' is called, which
-# configures the base build environment and references the toolchain file
-if (APPLE)
-  if (DEFINED IOS_PLATFORM)
-    if (NOT "${IOS_PLATFORM}" STREQUAL "OS"
-        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR"
-        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR64")
-      message(FATAL_ERROR
-        "IOS_PLATFORM must be set to either OS, SIMULATOR, or SIMULATOR64")
-    endif ()
-    if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
-      message(AUTHOR_WARNING
-        "You should use Xcode generator with IOS_PLATFORM enabled to get Universal builds.")
-    endif ()
-    if (BUILD_SHARED_LIBS)
-      message(FATAL_ERROR
-        "BUILD_SHARED_LIBS can not be on with IOS_PLATFORM enabled")
-    endif ()
-    if (BUILD_FRAMEWORK)
-      message(FATAL_ERROR
-        "BUILD_FRAMEWORK can not be on with IOS_PLATFORM enabled")
-    endif ()
-
-    # iOS only uses static libraries
-    set(BUILD_SHARED_LIBS OFF)
-
-    set(CMAKE_TOOLCHAIN_FILE
-      ${CMAKE_SOURCE_DIR}/builds/cmake/iOS.cmake)
-  endif ()
-else ()
-  if (DEFINED IOS_PLATFORM)
-    message(FATAL_ERROR "IOS_PLATFORM is not supported on this platform")
-  endif ()
-endif ()
+## CMAKE_TOOLCHAIN_FILE must be set before `project' is called, which
+## configures the base build environment and references the toolchain file
+#if (APPLE)
+#  if (DEFINED IOS_PLATFORM)
+#    if (NOT "${IOS_PLATFORM}" STREQUAL "OS"
+#        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR"
+#        AND NOT "${IOS_PLATFORM}" STREQUAL "SIMULATOR64")
+#      message(FATAL_ERROR
+#        "IOS_PLATFORM must be set to either OS, SIMULATOR, or SIMULATOR64")
+#    endif ()
+#    if (NOT "${CMAKE_GENERATOR}" STREQUAL "Xcode")
+#      message(AUTHOR_WARNING
+#        "You should use Xcode generator with IOS_PLATFORM enabled to get Universal builds.")
+#    endif ()
+#    if (BUILD_SHARED_LIBS)
+#      message(FATAL_ERROR
+#        "BUILD_SHARED_LIBS can not be on with IOS_PLATFORM enabled")
+#    endif ()
+#    if (BUILD_FRAMEWORK)
+#      message(FATAL_ERROR
+#        "BUILD_FRAMEWORK can not be on with IOS_PLATFORM enabled")
+#    endif ()
+#
+#    # iOS only uses static libraries
+#    set(BUILD_SHARED_LIBS OFF)
+#
+#    set(CMAKE_TOOLCHAIN_FILE
+#      ${CMAKE_SOURCE_DIR}/builds/cmake/iOS.cmake)
+#  endif ()
+#else ()
+#  if (DEFINED IOS_PLATFORM)
+#    message(FATAL_ERROR "IOS_PLATFORM is not supported on this platform")
+#  endif ()
+#endif ()
 
 
 project(freetype C)
@@ -203,7 +203,7 @@ if (BUILD_FRAMEWORK)
       "You should use Xcode generator with BUILD_FRAMEWORK enabled")
   endif ()
   set(CMAKE_OSX_ARCHITECTURES "$(ARCHS_STANDARD_32_64_BIT)")
-  set(BUILD_SHARED_LIBS ON)
+#  set(BUILD_SHARED_LIBS ON)
 endif ()
 
 
@@ -426,7 +426,7 @@ target_include_directories(
     PRIVATE
       ${CMAKE_CURRENT_BINARY_DIR}/include
       ${CMAKE_CURRENT_SOURCE_DIR}/include
-      
+
       # Make <ftconfig.h> available for builds/unix/ftsystem.c.
       ${CMAKE_CURRENT_BINARY_DIR}/include/freetype/config
 )
@@ -465,8 +465,7 @@ if (PNG_FOUND)
   list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "libpng")
 endif ()
 if (HarfBuzz_FOUND)
-  target_link_libraries(freetype PRIVATE ${HarfBuzz_LIBRARY})
-  target_include_directories(freetype PRIVATE ${HarfBuzz_INCLUDE_DIRS})
+  target_link_libraries(freetype PRIVATE HarfBuzz::HarfBuzz)
   list(APPEND PKG_CONFIG_REQUIRED_PRIVATE "harfbuzz >= ${HARFBUZZ_MIN_VERSION}")
 endif ()
 if (BROTLIDEC_FOUND)
