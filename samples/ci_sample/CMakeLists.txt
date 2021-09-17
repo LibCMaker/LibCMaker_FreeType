@@ -75,11 +75,10 @@ target_link_libraries(${PROJECT_NAME} PRIVATE Freetype::Freetype)
 
 # HarfBuzz
 if(FT_WITH_HarfBuzz)
-  target_include_directories(${PROJECT_NAME} PRIVATE ${HARFBUZZ_INCLUDE_DIR})
   # From <freetype sources>/docs/CHANGES:
   #  Note that HarfBuzz depends on FreeType.
   target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${HARFBUZZ_LIBRARY} Freetype::Freetype
+    HarfBuzz::HarfBuzz Freetype::Freetype
   )
   # HarfBuzz is C++ library.
   set_target_properties(${PROJECT_NAME} PROPERTIES LINKER_LANGUAGE CXX)
